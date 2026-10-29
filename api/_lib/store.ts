@@ -121,7 +121,15 @@ function genMsgId(): string {
 const dataKey = (hobbyId: string, id: string) => `msg:data:${hobbyId}:${id}`;
 const indexKey = (hobbyId: string) => `msg:index:${hobbyId}`;
 
-function parseHash(obj: Record<string, string> | null | undefined): MessageRecord | null {
+/** Upstash /pipeline 的 HGETALL 返回扁平数组 [f1,v1,f2,v2,...]，单命令模式返回对象；统一归一化 */
+function parseHash(raw: unknown): MessageRecord | null {
+  let obj: Record<string, string> | null = null;
+  if (Array.isArray(raw)) {
+    obj = {};
+    for (let i = 0; i + 1 < raw.length; i += 2) obj[String(raw[i])] = String(raw[i + 1]);
+  } else if (raw && typeof raw === 'object') {
+    obj = raw as Record<string, string>;
+  }
   if (!obj || !obj.id) return null;
   return {
     id: obj.id,
