@@ -21,7 +21,7 @@ export const Footer: React.FC<FooterProps> = ({ onTabChange, onOpenContact }) =>
           <div className="md:col-span-5 space-y-3">
             <div className="flex items-center gap-2.5">
               <img
-                src="/src/assets/images/avatar_kino.png"
+                src="/images/avatar_kino.png"
                 alt={PERSONAL_INFO.name}
                 className="w-7 h-7 rounded-full object-cover"
               />

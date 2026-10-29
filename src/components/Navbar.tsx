@@ -172,7 +172,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 />
                 {/* 中心唱片标签=头像（占比加大让唱片黑边更细） */}
                 <img
-                  src="/src/assets/images/avatar_kino.png"
+                  src="/images/avatar_kino.png"
                   alt="Charline / 周晏宁"
                   draggable={false}
                   className="absolute inset-[22%] w-[56%] h-[56%] rounded-full object-cover ring-1 ring-white/25 select-none"
