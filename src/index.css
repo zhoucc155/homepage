@@ -1,0 +1,98 @@
+@import "tailwindcss";
+
+/* 展台切换动效：分类切换时内容平滑淡入（无闪烁、无抖动） */
+@keyframes stageFadeIn {
+  from {
+    opacity: 0.2;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-stage-fade {
+  animation: stageFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* 珍藏歌单：播放中音量均衡条（等高基线 + 1/3 周期相位差 → 低中高/高中低波浪传播） */
+@keyframes eqBar {
+  0%, 100% { transform: scaleY(0.35); }
+  50% { transform: scaleY(1); }
+}
+.animate-eq {
+  transform-origin: bottom;
+  animation: eqBar 0.9s ease-in-out infinite;
+}
+
+/* 珍藏歌单：播放中行底进度条循环 */
+@keyframes songProgress {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+.animate-song-progress {
+  animation: songProgress 24s linear infinite;
+}
+
+/* 深色遮罩内的纤细滚动条（留言板输入框 / 列表） */
+.thin-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+}
+.thin-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.thin-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.thin-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+}
+/* 深色遮罩内的高对比文字选区 */
+.thin-scroll::selection {
+  background: rgba(255, 255, 255, 0.85);
+  color: #171717;
+}
+
+@layer base {
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    background-color: #FAFAF9;
+    color: #18181B;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Subtle, refined dot-grid pattern inspired by Image 4 & 6 */
+.bg-dot-pattern {
+  background-color: #FAFAF9;
+  background-image: radial-gradient(rgba(24, 24, 27, 0.07) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Clean, crisp card styling with subtle depth */
+.clean-card {
+  background-color: #FFFFFF;
+  border: 1px solid rgba(228, 228, 231, 0.9);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.03), 0 1px 2px -1px rgba(0, 0, 0, 0.03);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.clean-card:hover {
+  border-color: rgba(161, 161, 170, 0.6);
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.06);
+  transform: translateY(-2px);
+}
+
+/* Modern pill tag */
+.pill-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+}

@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>美镜 · 新潮慢照 · 呼吸感版 · 页面原型</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230F172A'/%3E%3Ccircle cx='32' cy='30' r='10' fill='none' stroke='%23F59E0B' stroke-width='4'/%3E%3Ccircle cx='32' cy='30' r='3' fill='%23F59E0B'/%3E%3Cpath d='M14 48l8-10M50 48l-8-10' stroke='%23F59E0B' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://miaoda.feishu.cn">
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{--ink:#0f172a;--amber:#f59e0b;--line:#f1f5f9}
+  body{
+    font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;
+    background-color:#fff; color:var(--ink);
+    background-image:conic-gradient(#f8fafc 0.25turn,#ffffff 0.25turn 0.5turn,#f8fafc 0.5turn 0.75turn,#ffffff 0.75turn);
+    background-size:48px 48px; background-attachment:fixed;
+  }
+  .text-gold{background:linear-gradient(135deg,#92400e 0%,#d97706 50%,#f59e0b 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .glass{background:rgba(255,255,255,.7);backdrop-filter:blur(24px);border-bottom:1px solid rgba(15,23,42,.05)}
+  .luxury{background:#fff;border:1px solid rgba(15,23,42,.04);transition:transform .5s cubic-bezier(.16,1,.3,1),box-shadow .5s cubic-bezier(.16,1,.3,1);border-color:#fff}
+  .luxury:hover{transform:translateY(-4px);box-shadow:0 20px 40px -12px rgba(15,23,42,.08);border-color:rgba(15,23,42,.08)}
+  .grad-gold{background:linear-gradient(135deg,#b45309 0%,#f59e0b 50%,#d97706 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .card{background:#fff;border:1px solid #f1f5f9;transition:.4s}
+  .card:hover{box-shadow:0 22px 45px -12px rgba(15,23,42,.1)}
+
+  /* ===== 原型工具栏 ===== */
+  .proto-bar{position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:999;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:999px;padding:8px 16px;display:flex;align-items:center;gap:6px;box-shadow:0 10px 30px rgba(0,0,0,.08)}
+  .proto-bar .tag{font-size:11px;font-weight:900;color:var(--amber);letter-spacing:.15em;margin-right:4px}
+  .proto-bar button{border:none;background:transparent;font-size:12px;font-weight:700;color:var(--ink);padding:6px 12px;border-radius:999px;cursor:pointer;transition:.2s}
+  .proto-bar button.on{background:var(--ink);color:#fff}
+  .proto-bar button:not(.on):hover{background:#f1f5f9}
+
+  .app{max-width:1024px;margin:0 auto;padding:0 0 40px}
+  .view{display:none}
+  .view.on{display:block}
+  .view.on.analyzing{display:flex}
+
+  /* ===== 顶栏 ===== */
+  .topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:20px 40px;border-radius:0;background:rgba(255,255,255,.85);backdrop-filter:blur(20px);border:none;border-bottom:1px solid rgba(15,23,42,.05);margin-bottom:0}
+  .topbar .brand{display:flex;align-items:center;gap:16px}
+  .topbar .b-ic{background:var(--ink);padding:10px;border-radius:12px;box-shadow:0 16px 24px rgba(15,23,42,.16);color:#fff}
+  .topbar .b-name{font-size:24px;font-weight:900;letter-spacing:-.05em;text-transform:uppercase}
+  .topbar .b-name .st{background:var(--ink);color:#fff;font-style:italic;font-weight:900;padding:2px 8px;border-radius:6px;margin-left:4px}
+  .topbar .acts{display:flex;align-items:center;gap:16px}
+  .key-btn{display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:999px;font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;border:none;cursor:pointer;transition:.3s}
+  .key-btn.active{background:#f1f5f9;color:#64748b}
+  .key-btn.setup{background:var(--amber);color:#fff;box-shadow:0 12px 24px rgba(245,158,11,.3);animation:pulse 2s ease-in-out infinite}
+  .reset-btn{background:var(--ink);color:#fff;border:none;padding:12px;border-radius:999px;display:none;align-items:center;justify-content:center;cursor:pointer;transition:.25s}
+  .reset-btn.show{display:flex}
+  .reset-btn:hover{transform:scale(1.1)}
+
+  /* ===== 起始页（V4.0 文字/颜色/悬浮） ===== */
+  .upload-wrap{padding:12px}
+  .hero{text-align:center;margin:52px 0 60px}
+  .hero .eyebrow{font-size:11px;font-weight:900;color:#94a3b8;letter-spacing:.6em;text-transform:uppercase;margin-bottom:24px;margin-left:.6em}
+  .hero h2{font-size:60px;line-height:1;font-weight:900;letter-spacing:-.05em}
+  .hero h2 br{display:none}
+  .hero .sub{color:#64748b;font-size:18px;font-weight:500;margin:20px auto 0}
+
+  .portrait{width:min(288px,72vw);height:min(288px,72vw);margin:0 auto;border-radius:50%;background:#fff;border:4px dashed #e2e8f0;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;text-align:center;padding:32px;transition:all .7s ease-out}
+  .portrait .plus{width:64px;height:64px;background:var(--ink);color:#fff;border-radius:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 16px 30px rgba(15,23,42,.2);margin-bottom:20px;transition:transform .5s}
+  .portrait:hover .plus{transform:rotate(12deg)}
+  .portrait .p-t{font-size:20px;font-weight:900;letter-spacing:-.025em}
+  .portrait .p-s{font-size:10px;font-weight:900;color:#94a3b8;letter-spacing:.1em;text-transform:uppercase;margin-top:4px}
+  .portrait img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 25%}
+  .portrait .del{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(255,255,255,.94);border:none;width:60px;height:60px;border-radius:50%;font-size:0;display:none;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 16px 30px rgba(0,0,0,.18);z-index:3;transition:.25s}
+  .portrait .del:hover{transform:translate(-50%,-50%) scale(1.1)}
+  .portrait.has-img .del{display:flex}
+  .portrait.has-img{border-style:solid;border-color:transparent}
+  .portrait input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+
+  .cfg-grid{display:grid;grid-template-columns:1fr;gap:40px;max-width:768px;margin:48px auto 0}
+  .cfg-card{background:#fff;padding:40px;border-radius:40px;border:1px solid #f1f5f9}
+  .cfg-lab{display:flex;align-items:center;gap:12px;margin-bottom:32px}
+  .cfg-lab svg{color:#94a3b8}
+  .cfg-lab span{font-size:10px;font-weight:900;color:#64748b;letter-spacing:.1em;text-transform:uppercase}
+  .age-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .age-btn{border:none;padding:14px;border-radius:12px;font-size:13px;font-weight:900;background:#f8fafc;color:#94a3b8;cursor:pointer;transition:.3s}
+  .age-btn.on{background:var(--ink);color:#fff;box-shadow:0 14px 28px rgba(15,23,42,.2);transform:scale(1.05)}
+  .sel-wrap{position:relative}
+  .sel{width:100%;background:#f8fafc;border:none;border-radius:16px;padding:20px 32px;font-size:15px;font-weight:900;color:var(--ink);appearance:none;cursor:pointer;outline:none}
+  .sel:focus{box-shadow:0 0 0 3px rgba(15,23,42,.06)}
+  .sel-chev{position:absolute;right:32px;top:50%;transform:translateY(-50%) rotate(90deg);color:#cbd5e1;pointer-events:none}
+
+  .cta-zone{max-width:768px;margin:48px auto 0;padding:0 8px}
+  .cta{width:100%;border:none;border-radius:32px;padding:32px;font-size:24px;font-weight:900;display:flex;align-items:center;justify-content:center;gap:16px;transition:.4s;cursor:pointer}
+  .cta.ready{background:var(--ink);color:#fff;box-shadow:0 30px 60px rgba(15,23,42,.25)}
+  .cta.ready:hover{transform:scale(1.02)}
+  .cta.dim{background:#f1f5f9;color:#cbd5e1;cursor:not-allowed}
+
+  /* ===== 诊断页 ===== */
+  .analyzing{min-height:78vh;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:40px}
+  .an-ring{width:190px;height:190px;border-radius:50%;background:conic-gradient(var(--ink),var(--amber),var(--ink));padding:5px;animation:spin 2.4s linear infinite}
+  .an-ring .core{width:100%;height:100%;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .an-title{font-size:30px;font-weight:900;letter-spacing:-.02em;text-transform:uppercase}
+  .an-status{font-size:14px;font-weight:900;color:#94a3b8;letter-spacing:.35em;text-transform:uppercase;opacity:.6;animation:pulse 1.6s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:.45}50%{opacity:1}}
+
+  /* ===== 报告页 ===== */
+  .result{padding:12px 0}
+  /* 大片卡 */
+  .hero-card{background:#fff;border-radius:56px;overflow:hidden;margin-bottom:32px}
+  .hero-banner{position:relative;min-height:280px;display:flex;align-items:center;background-size:cover;background-position:center}
+  .hero-banner .mask{position:absolute;inset:0;background:rgba(15,23,42,.62);backdrop-filter:blur(3px)}
+  .hero-banner .hz{position:relative;z-index:2;width:100%;padding:40px 60px}
+  .hb-eyebrow{display:flex;align-items:center;gap:20px;margin-bottom:18px}
+  .hb-eyebrow .bar{width:60px;height:7px;background:var(--amber);border-radius:99px}
+  .hb-eyebrow span{font-size:12px;font-weight:900;color:#fff;letter-spacing:.55em;text-transform:uppercase}
+  .hb-title{font-size:52px;font-weight:900;color:#fff;letter-spacing:-.02em;line-height:1}
+  .hb-title .en{font-size:24px;font-weight:700;color:rgba(255,255,255,.5);font-style:italic;letter-spacing:0;margin-left:20px}
+  .hb-desc{font-size:17px;font-weight:500;color:rgba(255,255,255,.92);max-width:640px;line-height:1.7;margin-top:12px}
+  .hero-body{padding:48px 44px}
+  .duo{display:grid;grid-template-columns:1fr;gap:36px}
+  .duo-item .head{display:flex;align-items:center;gap:18px;margin-bottom:16px}
+  .duo-item .head .ic{width:60px;height:60px;border-radius:22px;display:flex;align-items:center;justify-content:center;color:#fff}
+  .duo-item .head .ic.dark{background:var(--ink)} .duo-item .head .ic.lite{background:#f1f5f9;color:var(--ink)}
+  .duo-item .head h4{font-size:22px;font-weight:900;letter-spacing:-.01em;text-transform:uppercase}
+  .duo-item p{font-size:16px;color:#475569;font-weight:500;line-height:1.75}
+  .celeb{margin-top:36px;padding-top:28px;border-top:1px solid var(--line)}
+  .celeb .title{display:flex;align-items:center;gap:16px;margin-bottom:24px}
+  .celeb .title svg{color:#cbd5e1}
+  .celeb .title h4{font-size:22px;font-weight:900;text-transform:uppercase;letter-spacing:-.01em}
+  .celeb-grid{display:grid;grid-template-columns:1fr;gap:20px}
+  .celeb-card{background:#f8fafc;padding:30px;border-radius:36px;transition:.4s}
+  .celeb-card:hover{background:var(--ink);color:#fff;transform:scale(1.03);box-shadow:0 20px 40px rgba(15,23,42,.2)}
+  .celeb-card .nm{display:flex;align-items:center;gap:14px;font-size:18px;font-weight:900;margin-bottom:18px}
+  .celeb-card .nm .bar{width:8px;height:30px;background:var(--ink);border-radius:99px}
+  .celeb-card p{font-size:13px;line-height:1.8;opacity:.7}
+
+  /* 色彩系统 */
+  .color-sec{background:#fff;border-radius:56px;overflow:hidden;margin-bottom:32px}
+  .color-sec .part{padding:36px 40px}
+  .color-sec .part+.part{border-top:1px solid var(--line)}
+  .cs-head{display:flex;align-items:center;gap:20px;margin-bottom:28px;padding:0 12px}
+  .cs-head .ic{width:72px;height:72px;border-radius:24px;display:flex;align-items:center;justify-content:center;color:#fff;background:var(--ink)}
+  .cs-head.dim .ic{background:#e2e8f0;color:#94a3b8}
+  .cs-head h3{font-size:26px;font-weight:900;letter-spacing:-.01em;text-transform:uppercase}
+  .cs-head .en{font-size:10px;font-weight:900;color:#94a3b8;letter-spacing:.45em;text-transform:uppercase;display:block;margin-top:2px}
+  .pal-grid{display:grid;grid-template-columns:1fr;gap:0}
+  .pal{display:flex;flex-direction:column;gap:20px;padding:26px 20px;border-radius:28px;transition:.4s}
+  .pal:hover{background:#f8fafc}
+  .pal-top{display:flex;justify-content:space-between;align-items:flex-start}
+  .pal-top .nm h5{font-size:20px;font-weight:900;letter-spacing:-.01em}
+  .pal-top .nm .en{display:flex;align-items:center;gap:8px;font-size:9px;font-weight:900;color:var(--amber);letter-spacing:.28em;text-transform:uppercase;margin-top:6px}
+  .pal-top .nm .en .d{width:7px;height:7px;border-radius:50%;background:var(--amber)}
+  .pal-top .nm .en.w{color:#94a3b8} .pal-top .nm .en.w .d{background:#cbd5e1}
+  .pal-badge{width:44px;height:44px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:var(--ink);color:#fff;box-shadow:0 12px 24px rgba(15,23,42,.2)}
+  .pal-badge.w{background:#f1f5f9;color:#94a3b8}
+  .swatch-bar{display:flex;height:72px;border-radius:18px;overflow:hidden;box-shadow:0 18px 30px rgba(15,23,42,.1);border:1px solid #fff}
+  .swatch-bar .sw{flex:1;transition:flex .5s;position:relative}
+  .swatch-bar .sw:hover{flex:3.5}
+  .swatch-bar .sw .hx{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.4);color:#fff;font-size:10px;font-weight:900;letter-spacing:.1em}
+  .swatch-bar .sw:hover .hx{display:flex}
+  .pal-note{border-left:4px solid var(--ink);background:#fff;padding:16px;border-radius:14px;font-size:13px;line-height:1.7;font-weight:500;color:#334155}
+  .pal-note.w{border-color:#e2e8f0;background:#f8fafc;color:#64748b}
+
+  /* ===== 造型双卡（呼吸感增强 + V4.0 字号） ===== */
+  .style-duo{display:grid;grid-template-columns:1fr;gap:44px;margin-bottom:56px}
+  .st-card{background:#fff;border-radius:56px;padding:44px 40px;display:flex;flex-direction:column;gap:36px}
+  .st-head{display:flex;align-items:center;gap:24px;margin-bottom:14px}
+  .st-head .ic{width:66px;height:66px;border-radius:22px;display:flex;align-items:center;justify-content:center;color:#fff;background:var(--ink)}
+  .st-head .ic.am{background:var(--amber)}
+  .st-head h4{font-size:22px;font-weight:900;letter-spacing:-.01em;text-transform:uppercase}
+  .st-head .en{display:flex;align-items:center;gap:10px;font-size:9px;font-weight:900;color:#94a3b8;letter-spacing:.32em;text-transform:uppercase;margin-top:4px}
+  .st-head .en .ln{width:30px;height:1px;background:#e2e8f0}
+  .st-hero{position:relative;border-radius:40px;padding:38px;text-align:center;color:#fff;background:linear-gradient(135deg,#1e293b,#0f172a);overflow:hidden}
+  .st-hero.am{background:linear-gradient(135deg,#fbbf24,#f59e0b)}
+  .st-hero small{position:relative;z-index:2;display:block;font-size:10px;font-weight:900;letter-spacing:.5em;text-transform:uppercase;margin-bottom:18px}
+  .st-hero.slate small{color:var(--amber)} .st-hero.am small{color:rgba(255,255,255,.85)}
+  .st-hero h5{position:relative;z-index:2;font-size:26px;font-weight:900;letter-spacing:-.01em;text-transform:uppercase;line-height:1.25}
+  .kv-row{display:grid;grid-template-columns:1fr;gap:26px}
+  .kv{display:flex;flex-direction:column;gap:12px}
+  .kv small{font-size:9px;font-weight:900;color:#94a3b8;letter-spacing:.16em;text-transform:uppercase}
+  .kv b{font-size:14px;font-weight:900;line-height:1.65}
+  /* 穿戴蓝图（对应 V4.0 穿戴蓝图值字号 16px） */
+  .st-card.wear .kv b{font-size:16px}
+  /* 配饰调性（对应 V4.0 配饰调性值字号 13px） */
+  .st-card.acc .kv b{font-size:13px;line-height:1.5}
+  .kv.dim{border-right:none}
+  .swatch-group{display:flex;align-items:center;padding-right:8px}
+  .swatch-group .sg{width:50px;height:50px;border-radius:50%;border:4px solid #fff;box-shadow:0 12px 24px rgba(0,0,0,.14);margin-left:-12px;transition:.3s;position:relative;display:flex;align-items:center;justify-content:center}
+  .swatch-group .sg:first-child{margin-left:0}
+  .swatch-group .sg:hover{transform:scale(1.2);z-index:5}
+  .swatch-group .sg .hx{display:none;font-size:9px;font-weight:900;color:#fff;mix-blend-mode:difference}
+  .swatch-group .sg:hover .hx{display:block}
+  .st-foot{display:flex;justify-content:space-between;align-items:center;gap:24px;border-top:1px solid var(--line);padding-top:28px;margin-top:6px}
+  .st-foot .lab{font-size:9px;font-weight:900;color:#94a3b8;letter-spacing:.16em;text-transform:uppercase;margin-bottom:10px}
+  .st-foot .val{font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:-.01em;line-height:1.5}
+  /* 妆容行：呼吸感行距 */
+  .mk-rows{display:flex;flex-direction:column;gap:30px}
+  .mk-rows .kv{border-top:1px solid var(--line);padding-top:26px}
+
+  /* 图库 */
+  .gallery{margin-bottom:40px}
+  .g-head{display:flex;flex-direction:column;gap:20px;padding:0 12px;margin-bottom:28px}
+  .g-head h3{font-size:34px;font-weight:900;letter-spacing:-.02em;text-transform:uppercase}
+  .g-head .sub{display:flex;align-items:center;gap:14px}
+  .g-head .sub .ln{width:44px;height:1px;background:var(--ink)}
+  .g-head .sub p{font-size:14px;font-weight:500;color:#94a3b8;letter-spacing:.18em;text-transform:uppercase}
+  .g-grid{display:grid;grid-template-columns:1fr;gap:28px}
+  .g-card{position:relative;border-radius:56px;overflow:hidden;aspect-ratio:3/4;background:#e2e8f0;box-shadow:0 30px 60px -15px rgba(15,23,42,.22)}
+  .g-card .bg{position:absolute;inset:0;background-size:cover;background-position:center;transition:transform 2s ease-out}
+  .g-card:hover .bg{transform:scale(1.1)}
+  .g-card .ov{position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,23,42,.15) 0%,rgba(15,23,42,0) 35%,rgba(15,23,42,.92) 100%);display:flex;flex-direction:column;justify-content:flex-end;padding:44px 40px;transform:translateY(30px);transition:.6s}
+  .g-card:hover .ov{transform:translateY(0)}
+  .g-edition{align-self:flex-start;background:var(--amber);color:var(--ink);padding:10px 28px;border-radius:99px;font-size:11px;font-weight:900;letter-spacing:.32em;text-transform:uppercase;margin-bottom:22px;box-shadow:0 14px 26px rgba(245,158,11,.35)}
+  .g-card h4{font-size:30px;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:-.01em;margin-bottom:16px;line-height:1.1}
+  .g-card p{color:rgba(255,255,255,.75);font-size:14px;line-height:1.7;max-width:320px;font-weight:500}
+
+  /* 完成卡 */
+  .done{background:linear-gradient(135deg,#0f172a,#1e293b);border-radius:72px;padding:56px 32px;text-align:center;position:relative;overflow:hidden}
+  .done h4{color:#fff;font-size:34px;font-weight:900;letter-spacing:-.02em;text-transform:uppercase;margin-bottom:18px}
+  .done p{color:#94a3b8;font-size:16px;font-weight:500;line-height:2;max-width:600px;margin:0 auto}
+  .done .btn{margin-top:28px;border:none;background:#fff;color:var(--ink);font-weight:900;font-size:22px;padding:22px 72px;border-radius:28px;cursor:pointer;transition:.4s;display:inline-flex;align-items:center;gap:20px}
+  .done .btn:hover{background:var(--amber);color:#fff}
+
+  /* footer */
+  .footer{text-align:center;padding:56px 16px 30px;opacity:.55;transition:.5s}
+  .footer:hover{opacity:1}
+  .footer .f-brand{display:flex;align-items:center;justify-content:center;gap:16px;font-size:26px;font-weight:900;text-transform:uppercase;letter-spacing:-.01em}
+  .footer .f-sub{font-size:13px;font-weight:900;color:#64748b;letter-spacing:.5em;text-transform:uppercase;margin-top:14px}
+  .footer .f-copy{font-size:11px;color:#94a3b8;margin-top:8px}
+
+  .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:14px 26px;border-radius:16px;font-size:14px;font-weight:700;opacity:0;pointer-events:none;transition:.3s;z-index:300;box-shadow:0 20px 40px rgba(0,0,0,.25)}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  @media (min-width:768px){
+    .hero h2{font-size:96px}
+    .hero h2 br{display:inline}
+    .hero .sub{font-size:20px}
+    .hero .sub br{display:inline}
+        .portrait{width:320px;height:320px}
+    .cfg-grid{grid-template-columns:1fr 1fr;gap:40px}
+    .duo{grid-template-columns:1fr 1fr;gap:64px}
+    .celeb-grid{grid-template-columns:repeat(3,1fr);gap:36px}
+    .pal-grid{grid-template-columns:1fr 1fr;gap:24px}
+    .style-duo{grid-template-columns:1fr 1fr;gap:48px}
+    .kv-row{grid-template-columns:1fr 1fr;gap:16px}
+    .g-grid{grid-template-columns:1fr 1fr;gap:36px}
+    .g-head{flex-direction:row;align-items:flex-end;justify-content:space-between}
+    .age-grid{grid-template-columns:repeat(3,1fr)}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== 原型工具栏 ===== -->
+<div class="proto-bar" role="toolbar" aria-label="原型视图切换">
+  <span class="tag">原型导航</span>
+  <button data-view="upload" class="on">起始页</button>
+  <button data-view="analyzing">诊断页</button>
+  <button data-view="result">报告页</button>
+</div>
+
+<!-- 顶栏（全宽吸顶，对齐 localhost） -->
+<header class="topbar">
+  <div class="brand">
+    <div class="b-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.7L19.5 10l-5.6 1.3L12 17l-1.9-5.7L4.5 10l5.6-1.3z"/></svg></div>
+    <div class="b-name">Mirror <span class="st">Studio</span></div>
+  </div>
+  <div class="acts">
+    <button class="key-btn setup" id="keyBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg><span id="keyTxt">Configure Key</span></button>
+    <button class="reset-btn" id="resetBtn" data-view="upload"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></button>
+  </div>
+</header>
+
+<div class="app">
+
+  <!-- ===== 视图一：起始页 ===== -->
+  <section class="view on upload-wrap" id="view-upload">
+    <div class="hero">
+      <div class="eyebrow">Professional Aesthetic Lab</div>
+      <h2>解码你的 <br><span class="grad-gold">原生高级感</span></h2>
+      <p class="sub">基于 PCCS 骨相算法 深度解构美学基因</p>
+    </div>
+    <div class="portrait" id="portrait">
+      <div class="plus"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+      <div><div class="p-t">点击上传正面影像</div><div class="p-s">Portrait Scan Recommended</div></div>
+      <button class="del" id="delBtn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></button>
+      <input type="file" id="fileInput" accept="image/*">
+    </div>
+    <div class="cfg-grid">
+      <div class="cfg-card card">
+        <div class="cfg-lab"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Age Group</span></div>
+        <div class="age-grid" id="ageGrid">
+          <button class="age-btn" data-age="18-24">18-24</button>
+          <button class="age-btn on" data-age="25-29">25-29</button>
+          <button class="age-btn" data-age="30-34">30-34</button>
+          <button class="age-btn" data-age="35-39">35-39</button>
+          <button class="age-btn" data-age="40-49">40-49</button>
+          <button class="age-btn" data-age="50+">50+</button>
+        </div>
+      </div>
+      <div class="cfg-card card" style="display:flex;flex-direction:column;justify-content:center">
+        <div class="cfg-lab"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg><span>Occasion Logic</span></div>
+        <div class="sel-wrap">
+          <select class="sel" id="occasion">
+            <option>通勤</option><option>晚宴</option><option>度假</option><option>约会</option><option>派对</option>
+            <option>休闲</option><option>户外</option><option>面试</option><option>婚礼</option><option>校园</option><option>运动</option>
+          </select>
+          <span class="sel-chev"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </div>
+      </div>
+    </div>
+    <div class="cta-zone">
+      <button class="cta dim" id="startBtn">开启美学引擎</button>
+    </div>
+  </section>
+
+  <!-- ===== 视图二：诊断页 ===== -->
+  <section class="view analyzing" id="view-analyzing">
+    <div class="an-ring"><div class="core"><svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3"/></svg></div></div>
+    <div><h3 class="an-title">Analyzing DNA</h3><p class="an-status" id="anStatus">深度识别原生条件中...</p></div>
+  </section>
+
+  <!-- ===== 视图三：报告页 ===== -->
+  <section class="view result" id="view-result">
+    <div class="result-body" id="resultBody"></div>
+  </section>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* 视图切换 */
+var views={upload:document.getElementById('view-upload'),analyzing:document.getElementById('view-analyzing'),result:document.getElementById('view-result')};
+var navBtns=document.querySelectorAll('.proto-bar button');
+function showView(n){
+  Object.keys(views).forEach(function(k){views[k].classList.toggle('on',k===n);});
+  navBtns.forEach(function(b){b.classList.toggle('on',b.dataset.view===n);});
+  var rb=document.getElementById('resetBtn');
+  if(rb)rb.classList.toggle('show',n==='result');
+  window.scrollTo(0,0);
+}
+navBtns.forEach(function(b){b.addEventListener('click',function(){showView(b.dataset.view);});});
+
+/* 上传 */
+var portrait=document.getElementById('portrait'),fileInput=document.getElementById('fileInput'),delBtn=document.getElementById('delBtn'),hasImage=false;
+portrait.addEventListener('click',function(e){if(e.target===delBtn)return;fileInput.click();});
+fileInput.addEventListener('change',function(){
+  var f=this.files&&this.files[0];if(!f)return;
+  var rd=new FileReader();
+  rd.onload=function(){
+    var img=document.createElement('img');img.src=rd.result;img.alt='预览';
+    portrait.insertBefore(img,delBtn);portrait.classList.add('has-img');
+    hasImage=true;updateCta();
+  };
+  rd.readAsDataURL(f);
+});
+delBtn.addEventListener('click',function(e){e.stopPropagation();portrait.querySelectorAll('img').forEach(function(i){i.remove();});portrait.classList.remove('has-img');hasImage=false;updateCta();});
+
+/* 年龄段 */
+document.querySelectorAll('.age-btn').forEach(function(b){
+  b.addEventListener('click',function(){document.querySelectorAll('.age-btn').forEach(function(x){x.classList.remove('on');});b.classList.add('on');});
+});
+
+/* CTA */
+var startBtn=document.getElementById('startBtn');
+function updateCta(){startBtn.classList.toggle('ready',hasImage);startBtn.classList.toggle('dim',!hasImage);}
+startBtn.addEventListener('click',function(){if(!hasImage){showToast('请先上传一张肖像');return;}startAnalyzing();});
+
+/* 诊断 */
+var anStatus=document.getElementById('anStatus');
+function startAnalyzing(){
+  showView('analyzing');
+  var phases=['深度识别原生条件中...','正在解构三色核心与骨相特征...','执行 PCCS 色彩空间映射...','生成完整美学诊断报告...'];
+  var i=0;
+  var t=setInterval(function(){
+    i++;
+    if(i<phases.length)anStatus.textContent=phases[i];
+    else{clearInterval(t);renderResult();setTimeout(function(){showView('result');},300);}
+  },850);
+}
+
+/* Toast */
+var toast=document.getElementById('toast'),toastTimer;
+function showToast(m){toast.textContent=m;toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(function(){toast.classList.remove('show');},2200);}
+document.querySelectorAll('.key-btn, #resetBtn').forEach(function(b){b.addEventListener('click',function(){if(b.id==='resetBtn'){reset();}else{showToast('API Key 面板：演示中');}});});
+
+/* 重置 */
+function reset(){
+  hasImage=false;portrait.querySelectorAll('img').forEach(function(i){i.remove();});portrait.classList.remove('has-img');
+  updateCta();showView('upload');
+}
+
+/* 渲染报告（mock：深秋型）—— 四个造型模块沿用新潮慢照配色/布局/互动，字号对齐 V4.0，并加呼吸感 */
+function renderResult(){
+  var html=
+    '<div class="hero-card luxury">'+
+      '<div class="hero-banner" style="background-image:linear-gradient(160deg,#6B3A2A 0%,#A0522D 45%,#D2A679 100%)">'+
+        '<div class="mask"></div>'+
+        '<div class="hz">'+
+          '<div class="hb-eyebrow"><div class="bar"></div><span>Diagnostic Analysis</span></div>'+
+          '<div class="hb-title">深秋型 <span class="en">Deep Autumn</span></div>'+
+          '<p class="hb-desc">浓郁醇厚，如深秋暖阳般沉稳而知性，自带复古高级感</p>'+
+        '</div>'+
+      '</div>'+
+      '<div class="hero-body">'+
+        '<div class="duo">'+
+          '<div class="duo-item"><div class="head"><div class="ic dark">T</div><h4>三色核心解构</h4></div><p>骨相立体、线条柔和，暖调底肌明度适中；适合浓郁暖色系铺陈，以低饱和的复古配色强化沉稳气质与成熟知性美感。</p></div>'+
+          '<div class="duo-item"><div class="head"><div class="ic lite">F</div><h4>面部特征鉴定</h4></div><p>眉骨平缓、鼻梁挺秀，下颌线圆润，整体风格偏优雅复古；建议以暖调修容与大地色晕染，凸显五官纵深与立体轮廓。</p></div>'+
+        '</div>'+
+        '<div class="celeb"><div class="title"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><h4>气质灵感范本</h4></div>'+
+          '<div class="celeb-grid">'+
+            '<div class="celeb-card"><div class="nm"><div class="bar"></div><span>气质范本 A</span></div><p>偏爱大地色系穿搭与复古卷发，擅长用暖调唇色营造沉稳知性的高级氛围。</p></div>'+
+            '<div class="celeb-card"><div class="nm"><div class="bar"></div><span>气质范本 B</span></div><p>以焦糖发色与驼色大衣著称，整体呈现温润、大气又不失精致的美感。</p></div>'+
+            '<div class="celeb-card"><div class="nm"><div class="bar"></div><span>气质范本 C</span></div><p>善用美拉德色系与哑光妆容，塑造复古、成熟而具有叙事感的形象。</p></div>'+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+    '</div>'+
+
+    '<div class="color-sec">'+
+      '<div class="part"><div class="cs-head"><div class="ic"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13.5 6a6.5 6.5 0 1 0 6.5 6.5"/><path d="M6.5 6a6.5 6.5 0 0 0 0 13"/><path d="M13.5 6H6.5"/><path d="M6.5 13.5V6.5"/></svg></div><div><h3>理想色彩方案</h3><span class="en">Optimal Palette Selection</span></div></div>'+
+        '<div class="pal-grid">'+
+          '<div class="pal"><div class="pal-top"><div class="nm"><h5>美拉德</h5><div class="en"><span class="d"></span>Maillard</div></div><div class="pal-badge"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>'+
+            '<div class="swatch-bar"><div class="sw" style="background:#4B2C20"><span class="hx">#4B2C20</span></div><div class="sw" style="background:#5C3D2E"><span class="hx">#5C3D2E</span></div><div class="sw" style="background:#A0522D"><span class="hx">#A0522D</span></div><div class="sw" style="background:#CD853F"><span class="hx">#CD853F</span></div><div class="sw" style="background:#DEB887"><span class="hx">#DEB887</span></div></div>'+
+            '<div class="pal-note">衬托肤色暖调，增加成熟知性美，深邃层次感与复古韵味兼备。</div>'+
+          '</div>'+
+          '<div class="pal"><div class="pal-top"><div class="nm"><h5>大地色系</h5><div class="en"><span class="d"></span>Earth Tones</div></div><div class="pal-badge"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>'+
+            '<div class="swatch-bar"><div class="sw" style="background:#3E3232"><span class="hx">#3E3232</span></div><div class="sw" style="background:#8D7B68"><span class="hx">#8D7B68</span></div><div class="sw" style="background:#A4907C"><span class="hx">#A4907C</span></div><div class="sw" style="background:#C8B6A6"><span class="hx">#C8B6A6</span></div><div class="sw" style="background:#F1DEC9"><span class="hx">#F1DEC9</span></div></div>'+
+            '<div class="pal-note">百搭自然，增加面部立体度，沉稳内敛的配色提升整体高级质感。</div>'+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="part"><div class="cs-head dim"><div class="ic"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div><h3>风险避雷预警</h3><span class="en">Avoidance Warnings</span></div></div>'+
+        '<div class="pal-grid">'+
+          '<div class="pal"><div class="pal-top"><div class="nm"><h5 style="color:#94a3b8">荧光色</h5><div class="en w"><span class="d"></span>Neon</div></div><div class="pal-badge w"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div></div>'+
+            '<div class="swatch-bar"><div class="sw" style="background:#FF0000"><span class="hx">#FF0000</span></div><div class="sw" style="background:#FF00FF"><span class="hx">#FF00FF</span></div><div class="sw" style="background:#00FF00"><span class="hx">#00FF00</span></div><div class="sw" style="background:#00FFFF"><span class="hx">#00FFFF</span></div><div class="sw" style="background:#CCFF00"><span class="hx">#CCFF00</span></div></div>'+
+            '<div class="pal-note w">肤色杀手，显黄显黑极其明显，高饱和亮色破坏复古温润气质。</div>'+
+          '</div>'+
+          '<div class="pal"><div class="pal-top"><div class="nm"><h5 style="color:#94a3b8">多巴胺</h5><div class="en w"><span class="d"></span>Dopamine</div></div><div class="pal-badge w"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div></div>'+
+            '<div class="swatch-bar"><div class="sw" style="background:#FF1493"><span class="hx">#FF1493</span></div><div class="sw" style="background:#FF4500"><span class="hx">#FF4500</span></div><div class="sw" style="background:#FFD700"><span class="hx">#FFD700</span></div><div class="sw" style="background:#1E90FF"><span class="hx">#1E90FF</span></div><div class="sw" style="background:#00FF7F"><span class="hx">#00FF7F</span></div></div>'+
+            '<div class="pal-note w">对比过强导致肤色暗沉，喧宾夺主，弱化成熟知性的沉稳气场。</div>'+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+    '</div>'+
+
+    /* 发型发色 + 妆容调色（V4.0 字号 + 呼吸感） */
+    '<div class="style-duo">'+
+      '<div class="st-card luxury hair">'+
+        '<div class="st-head"><div class="ic"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><path d="M8.12 8.12L12 12M20 4l-8.5 8.5M17 3l5 5M20.5 7.5l1 1M7 17c0-2.76 2.24-5 5-5l3 3c0 2.76-2.24 5-5 5z"/></svg></div><div><h4>发型发色</h4><div class="en"><span class="ln"></span>Hair Architecture</div></div></div>'+
+        '<div class="st-hero slate"><small>Recommended Style</small><h5>复古慵懒大波浪</h5></div>'+
+        '<div class="kv-row">'+
+          '<div class="kv"><small>推荐长度 / Length</small><b>过肩长发</b></div>'+
+          '<div class="kv"><small>刘海方案 / Fringe</small><b>法式慵懒刘海</b></div>'+
+          '<div class="kv"><small>修剪手法 / Technique</small><b>高层次内扣·发尾微卷</b></div>'+
+          '<div class="kv"><small>细节建议 / Detail</small><b>强调光泽与蓬松弧度</b></div>'+
+        '</div>'+
+        '<div class="st-foot"><div><div class="lab">推荐发色 / Hair Color</div><div class="val">焦糖棕 / 深栗色</div></div>'+
+          '<div class="swatch-group"><div class="sg" style="background:#4B2C20"><span class="hx">#4B2C20</span></div><div class="sg" style="background:#5C3D2E"><span class="hx">#5C3D2E</span></div><div class="sg" style="background:#A0522D"><span class="hx">#A0522D</span></div></div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="st-card luxury makeup">'+
+        '<div class="st-head"><div class="ic am"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20h-5.16A11.94 11.94 0 0 1 12 8.32V4h4V2h-8v2h4v4.32A11.94 11.94 0 0 1 9.16 20H4"/></svg></div><div><h4>妆容调色</h4><div class="en"><span class="ln"></span>Chromatic Canvas</div></div></div>'+
+        '<div class="st-hero am"><small>Visual Concept</small><h5>复古暖调妆</h5></div>'+
+        '<div class="mk-rows">'+
+          '<div class="kv" style="flex-direction:row;justify-content:space-between;align-items:center"><div><small>粉底底妆 / Foundation</small><b style="display:block;margin-top:10px">暖调奶油肌</b></div><div class="swatch-group"><div class="sg" style="background:#E8C39E"><span class="hx">#E8C39E</span></div></div></div>'+
+          '<div class="kv" style="flex-direction:row;justify-content:space-between;align-items:center"><div><small>腮红方案 / Blush</small><b style="display:block;margin-top:10px">陶土棕 / 暖杏色</b></div><div class="swatch-group"><div class="sg" style="background:#B5651D"><span class="hx">#B5651D</span></div><div class="sg" style="background:#E08E45"><span class="hx">#E08E45</span></div></div></div>'+
+          '<div class="kv" style="flex-direction:row;justify-content:space-between;align-items:center"><div><small>唇色建议 / Lip Color</small><b style="display:block;margin-top:10px">枫叶红 / 砖红</b></div><div class="swatch-group"><div class="sg" style="background:#B7410E"><span class="hx">#B7410E</span></div><div class="sg" style="background:#A0522D"><span class="hx">#A0522D</span></div><div class="sg" style="background:#C85A17"><span class="hx">#C85A17</span></div></div></div>'+
+        '</div>'+
+      '</div>'+
+    '</div>'+
+
+    /* 服饰美学 + 配饰逻辑（V4.0 字号 + 呼吸感） */
+    '<div class="style-duo">'+
+      '<div class="st-card luxury wear">'+
+        '<div class="st-head"><div class="ic"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg></div><div><h4>服饰美学</h4><div class="en"><span class="ln"></span>Visual Blueprint</div></div></div>'+
+        '<div class="st-hero slate" style="padding:44px;text-align:center"><small>Primary Aesthetic</small><h5>复古大地风</h5></div>'+
+        '<div class="kv-row">'+
+          '<div class="kv"><small>材质建议 / Material</small><b>羊绒 · 灯芯绒 · 麂皮</b></div>'+
+          '<div class="kv"><small>版型剪裁 / Cut</small><b>宽松大衣 · 高腰阔腿</b></div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="st-card luxury acc">'+
+        '<div class="st-head"><div class="ic am"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l4 6-10 13L2 9z"/><path d="M11 3 8 9l4 13 4-13-3-6"/></svg></div><div><h4>配饰逻辑</h4><div class="en"><span class="ln"></span>Jewelry Curator</div></div></div>'+
+        '<div class="st-hero slate" style="background:#f8fafc;color:var(--ink);padding:40px;text-align:center"><small style="color:#94a3b8">Recommended Finish</small><h5 style="color:var(--ink)">哑光铜金</h5></div>'+
+        '<div class="kv-row">'+
+          '<div class="kv"><small>款式风格 / Theme</small><b>复古做旧款</b></div>'+
+          '<div class="kv"><small>形状规格 / Geometry</small><b>圆润几何 · 小体积</b></div>'+
+        '</div>'+
+      '</div>'+
+    '</div>'+
+
+    '<div class="gallery">'+
+      '<div class="g-head"><div><h3>Style Gallery</h3><div class="sub"><span class="ln"></span><p>基于诊断逻辑的视觉渲染</p></div></div></div>'+
+      '<div class="g-grid">'+
+        '<div class="g-card"><div class="bg" style="background-image:linear-gradient(160deg,#5C3D2E 0%,#A0522D 50%,#CD853F 100%)"></div><div class="ov"><div class="g-edition">Edition 01</div><h4>复古通勤</h4><p>焦糖大衣搭配暖调妆容，沉稳知性的复古职场氛围。</p></div></div>'+
+        '<div class="g-card"><div class="bg" style="background-image:linear-gradient(160deg,#8D7B68 0%,#A4907C 45%,#D2B48C 100%)"></div><div class="ov"><div class="g-edition">Edition 02</div><h4>晚宴大片</h4><p>大地色系长裙与哑光金属配饰，优雅大气的社交气场。</p></div></div>'+
+      '</div>'+
+    '</div>'+
+
+    '<div class="done">'+
+      '<h4>Diagnosis Complete</h4>'+
+      '<p>美学不仅是视觉的呈现，更是自我意识的觉醒。如果您想探索更多风格维度，随时欢迎重启鉴定通道。</p>'+
+      '<button class="btn" id="doneBtn"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>重新启动</button>'+
+    '</div>'+
+
+    '<div class="footer"><div class="f-brand"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.7L19.5 10l-5.6 1.3L12 17l-1.9-5.7L4.5 10l5.6-1.3z"/></svg>Mirror Aesthetic Lab</div><div class="f-sub">Professional Biometric Diagnostic System</div><div class="f-copy">© 2025 Aesthetic Intelligence Bureau. All Rights Reserved.</div></div>';
+
+  document.getElementById('resultBody').innerHTML=html;
+  document.getElementById('doneBtn').addEventListener('click',function(){reset();});
+}
+</script>
+</body>
+</html>
