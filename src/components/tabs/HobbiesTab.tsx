@@ -2589,7 +2589,7 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
         {playingSong && playingSong.bvid && (
           <iframe
             key={playNonce}
-            src={`https://player.bilibili.com/player.html?bvid=${playingSong.bvid}&autoplay=1&danmaku=0${elapsedBaseRef.current >= 1 ? `&t=${Math.max(0, elapsedBaseRef.current - RESUME_SEEK_BACK_S).toFixed(1)}` : ''}`}
+            src={`https://player.bilibili.com/player.html?bvid=${playingSong.bvid}&autoplay=1&danmaku=0&t=${elapsedBaseRef.current >= 1 ? Math.max(0, elapsedBaseRef.current - RESUME_SEEK_BACK_S).toFixed(1) : '0'}`}
             allow="autoplay; encrypted-media"
             title={playingSong.title}
             className="h-px w-px border-0"
