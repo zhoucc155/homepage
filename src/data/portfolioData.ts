@@ -210,7 +210,7 @@ export const PROJECTS_DATA: ProjectItem[] = [
     metrics: [
       { label: '前端框架', value: 'React 19 + TS 7' },
       { label: '构建工具', value: 'Vite 8' },
-      { label: '部署环境', value: 'Vercel' },
+      { label: '部署环境', value: 'Cloudflare' },
     ],
     tags: ['个人网站', 'AI 共建', 'React 19', 'Tailwind CSS 4', '作品集设计'],
     description: '以「设计与工程一体」思路打造的作品集站点：bento 作品栅格、特写视频播放器、赛道复盘长页与全局音乐播放器，由 Gemini 与 Trae 协作从设计稿到代码全流程共建。',
