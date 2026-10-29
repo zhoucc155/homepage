@@ -511,7 +511,7 @@ export const WorksTab: React.FC<WorksTabProps> = ({ onSelectProject }) => {
                       {isReversed ? (
                         <div className="flex items-center justify-end">
                           <button
-                            onClick={() => window.open('https://my.feishu.cn/wiki/S6HWw3efgiDAedkbXFVcu5JunUb', '_blank', 'noreferrer')}
+                            onClick={() => window.open('https://github.com/zhoucc155/JobHunter', '_blank', 'noreferrer')}
                             className="inline-flex items-center gap-1 text-xs font-medium text-neutral-500 group-hover:text-neutral-900 bg-[linear-gradient(currentColor,currentColor)] bg-[length:0%_1px] bg-[position:0_100%] bg-no-repeat group-hover:bg-[length:100%_1px] transition-[background-size] duration-300 cursor-pointer"
                           >
                             <span>点击获取工具</span>
