@@ -152,7 +152,7 @@ export async function listMessages(
   visitorId: string,
   isAdmin: boolean
 ): Promise<PublicMessage[]> {
-  if (!redisEnabled) return memList(hobbyId, visitorId, isAdmin);
+  if (!redisEnabled()) return memList(hobbyId, visitorId, isAdmin);
 
   const ids = (await redisCmd('ZRANGE', indexKey(hobbyId), '0', '-1')) as string[] | null;
   if (!ids || ids.length === 0) return [];
@@ -179,7 +179,7 @@ export async function createMessage(
   visitorId: string,
   content: string
 ): Promise<CreateResult> {
-  if (!redisEnabled) {
+  if (!redisEnabled()) {
     const now = Date.now();
     const until = memRate.get(visitorId) ?? 0;
     if (now < until) return { ok: false, reason: 'rate', retryAfter: Math.ceil((until - now) / 1000) };
@@ -218,7 +218,7 @@ export async function deleteMessage(
   byAdmin: boolean,
   visitorId: string
 ): Promise<boolean> {
-  if (!redisEnabled) return memDelete(hobbyId, id, byAdmin, visitorId);
+  if (!redisEnabled()) return memDelete(hobbyId, id, byAdmin, visitorId);
 
   const rec = parseHash((await redisCmd('HGETALL', dataKey(hobbyId, id))) as Record<string, string>);
   if (!rec) return false;
@@ -238,7 +238,7 @@ export async function patchMessage(
   id: string,
   action: PatchAction
 ): Promise<boolean> {
-  if (!redisEnabled) return memPatch(hobbyId, id, action);
+  if (!redisEnabled()) return memPatch(hobbyId, id, action);
 
   const rec = parseHash((await redisCmd('HGETALL', dataKey(hobbyId, id))) as Record<string, string>);
   if (!rec) return false;
@@ -260,7 +260,7 @@ export async function patchMessage(
 
 /** 存储管理员 token（12h 有效） */
 export async function issueAdminToken(token: string): Promise<void> {
-  if (redisEnabled) {
+  if (redisEnabled()) {
     await redisCmd('SET', `admin:token:${token}`, '1', 'EX', ADMIN_TOKEN_TTL_SECONDS);
   } else {
     memTokens.set(token, Date.now() + ADMIN_TOKEN_TTL_SECONDS * 1000);
@@ -269,7 +269,7 @@ export async function issueAdminToken(token: string): Promise<void> {
 
 export async function verifyAdminToken(token: string): Promise<boolean> {
   if (!token) return false;
-  if (redisEnabled) {
+  if (redisEnabled()) {
     return (await redisCmd('EXISTS', `admin:token:${token}`)) === 1;
   }
   const until = memTokens.get(token) ?? 0;
@@ -282,7 +282,7 @@ export async function verifyAdminToken(token: string): Promise<boolean> {
 
 export async function revokeAdminToken(token: string): Promise<void> {
   if (!token) return;
-  if (redisEnabled) {
+  if (redisEnabled()) {
     await redisCmd('DEL', `admin:token:${token}`);
   } else {
     memTokens.delete(token);

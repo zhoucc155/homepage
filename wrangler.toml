@@ -1,0 +1,6 @@
+# Cloudflare Pages 配置：dashboard 导入仓库后自动读取本文件。
+# pages_build_output_dir 存在即启用 Pages 高级模式；nodejs_compat 使 functions/ 内可用 node:crypto。
+name = "homepage"
+pages_build_output_dir = "dist"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]

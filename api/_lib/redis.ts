@@ -1,21 +1,23 @@
 // Upstash Redis REST API 封装：纯 fetch，无需 redis 客户端依赖。
 // 所有命令统一走 /pipeline（JSON 数组），规避 URL 编码问题（留言内容含换行/中文/空格）。
+// 环境变量经 config 中心注入（applyEnv），Vercel / Cloudflare / express 三端共用。
 
-const REST_URL = process.env.UPSTASH_REDIS_REST_URL;
-const REST_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN;
+import { config } from './config';
 
 // 未配置环境变量时为 false，存储层自动降级为内存兜底（本地无 Upstash 联调用）
-export const redisEnabled = Boolean(REST_URL && REST_TOKEN);
+export const redisEnabled = (): boolean => Boolean(config.upstashUrl && config.upstashToken);
 
 type RedisValue = string | number;
 type Command = (string | number)[];
 
 async function request(commands: Command[]): Promise<unknown[]> {
-  if (!REST_URL || !REST_TOKEN) throw new Error('Upstash Redis 未配置');
-  const res = await fetch(`${REST_URL.replace(/\/+$/, '')}/pipeline`, {
+  const url = config.upstashUrl;
+  const token = config.upstashToken;
+  if (!url || !token) throw new Error('Upstash Redis 未配置');
+  const res = await fetch(`${url.replace(/\/+$/, '')}/pipeline`, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${REST_TOKEN}`,
+      Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(commands),

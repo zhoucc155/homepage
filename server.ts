@@ -26,5 +26,5 @@ app.all('/api/admin/logout', adapt(logoutHandler));
 
 app.listen(PORT, () => {
   console.log(`API dev server: http://localhost:${PORT}`);
-  console.log(redisEnabled ? '存储：Upstash Redis' : '存储：内存兜底（未配置 UPSTASH_* 环境变量）');
+  console.log(redisEnabled() ? '存储：Upstash Redis' : '存储：内存兜底（未配置 UPSTASH_* 环境变量）');
 });

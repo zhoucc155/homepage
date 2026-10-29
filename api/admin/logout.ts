@@ -1,14 +1,20 @@
-// /api/admin/logout —— 管理员登出：吊销 Bearer token（前端同时清 sessionStorage）
+// /api/admin/logout —— Vercel Node handler 薄适配层（业务逻辑见 api/_lib/router.ts）
 
-import { getBearerToken, type ApiRequest, type ApiResponse } from '../_lib/auth';
-import { revokeAdminToken } from '../_lib/store';
+import { applyEnv } from '../_lib/config';
+import { dispatchLogout, type CoreRequest } from '../_lib/router';
+import type { ApiRequest, ApiResponse } from '../_lib/auth';
 
 export default async function handler(req: ApiRequest, res: ApiResponse) {
+  applyEnv();
+  const core: CoreRequest = {
+    method: req.method ?? 'GET',
+    query: req.query ?? {},
+    body: req.body,
+    headers: req.headers ?? {},
+  };
   try {
-    if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
-    const token = getBearerToken(req);
-    if (token) await revokeAdminToken(token);
-    return res.status(200).json({ ok: true });
+    const r = await dispatchLogout(core);
+    return res.status(r.status).json(r.body);
   } catch (err) {
     console.error('[api/admin/logout]', err);
     return res.status(500).json({ error: '服务器错误，请稍后再试' });

@@ -1,6 +1,7 @@
 // 管理员鉴权 + 输入校验。密码比对使用 timingSafeEqual 防时序攻击。
 
 import { timingSafeEqual, randomBytes } from 'node:crypto';
+import { config } from './config';
 import { verifyAdminToken } from './store';
 
 /** 最小请求/响应接口：兼容 Vercel Node functions 与 express（本地 server.ts 复用同一份 handler） */
@@ -21,7 +22,7 @@ export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 /** 恒时比对管理员密码；未配置 ADMIN_PASSWORD 时一律失败 */
 export function isValidAdminPassword(input: unknown): boolean {
-  const secret = process.env.ADMIN_PASSWORD;
+  const secret = config.adminPassword;
   if (!secret || typeof input !== 'string') return false;
   const a = Buffer.from(input);
   const b = Buffer.from(secret);
