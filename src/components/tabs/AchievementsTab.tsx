@@ -242,7 +242,7 @@ export const AchievementsTab: React.FC<AchievementsTabProps> = ({ onSelectProjec
             >
               {/* 顶部封面图 */}
               <div className="relative aspect-[16/8.5] overflow-hidden bg-neutral-100">
-                <ProjectCover src={project.image} alt={project.title} />
+                <ProjectCover src={project.image} alt={project.title} fit="cover" />
                 {/* 电影级光影渐变：自底部向上细腻过渡，衬托角标与整体质感 */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent pointer-events-none" />
                 <div className="absolute top-3 left-3 w-[72px] text-center tracking-wider backdrop-blur-md bg-black/45 border border-white/15 text-white text-[10px] font-semibold py-1 rounded-full">
