@@ -21,8 +21,7 @@ async function request(commands: Command[]): Promise<unknown[]> {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(commands),
-    // Serverless 函数内不缓存
-    cache: 'no-store',
+    // POST 请求本身不会被缓存，无需显式声明 cache（Cloudflare Workers 不支持该字段）
   });
   if (!res.ok) throw new Error(`Upstash HTTP ${res.status}`);
   const data = (await res.json()) as { result?: unknown; error?: string }[];
