@@ -3037,13 +3037,7 @@ export const HobbiesTab: React.FC = () => {
                             <ChevronDown
                               className={`w-3.5 h-3.5 text-neutral-400 hover:text-neutral-500 transition-all duration-200 ${playlistOpen ? '' : '-rotate-90'}`}
                             />
-                            {/* 点击判定锁定在折叠符号：文字区阻断冒泡并还原光标，点击文字不再触发折叠（按钮回车键仍可操作） */}
-                            <span
-                              className="text-xs font-bold cursor-default"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              {note.title}
-                            </span>
+                            <span className="text-xs font-bold">{note.title}</span>
                           </button>
                         ) : (
                           <div className="flex items-center gap-1.5 text-xs font-bold text-neutral-800">
@@ -3253,13 +3247,7 @@ export const HobbiesTab: React.FC = () => {
                         <ChevronDown
                           className={`w-3.5 h-3.5 text-neutral-400 hover:text-neutral-500 transition-all duration-200 ${filmPicksOpen ? '' : '-rotate-90'}`}
                         />
-                        {/* 点击判定锁定在折叠符号：文字区阻断冒泡并还原光标，点击文字不再触发折叠（按钮回车键仍可操作） */}
-                        <span
-                          className="text-xs font-bold cursor-default"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          推荐片单
-                        </span>
+                        <span className="text-xs font-bold">推荐片单</span>
                       </button>
                       {filmPicksOpen ? (
                         <div className="flex items-center gap-1">
