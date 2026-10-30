@@ -22,6 +22,11 @@ import { usePlayer } from '../MusicPlayerContext';
 let unmutedVideoCount = 0;
 let musicPausedByVideo = false;
 
+/* 视频互斥注册表：同一时刻最多一个特写视频在播放。
+   后播的会让先播的自动暂停；先播的暂停后不会因后者停止而自动续播 */
+type VideoStopper = { current: () => void };
+let pauseActiveVideo: VideoStopper | null = null;
+
 /* 半宽卡自定义角标：命中 id 时以「AI实践」样式胶囊显示固定文案，未命中则显示 分类 · 年份 */
 const CUSTOM_BADGES: Record<string, string> = {
   'echoes-audio-drama': 'AI实践', // 美镜
@@ -54,6 +59,20 @@ const FeaturedVideo: React.FC<{ src: string; alt: string; frame?: 'fill' | 'port
   const playerRef = useRef(player);
   playerRef.current = player;
   const wasUnmutedPlaying = useRef(false);
+  const [hovered, setHovered] = useState(false);
+  /* 本实例的暂停器：播放时以 ref 身份注册到互斥表，供其他实例调用 */
+  const stopperRef = useRef<() => void>(() => {});
+  stopperRef.current = () => {
+    const video = videoRef.current;
+    if (video && !video.paused) video.pause();
+  };
+
+  /* 卸载时若自己仍占据互斥表则释放 */
+  useEffect(() => {
+    return () => {
+      if (pauseActiveVideo === stopperRef) pauseActiveVideo = null;
+    };
+  }, []);
 
   /* 非静音播放 → 暂停背景音乐；转为静音或暂停 → 自动续播（仅当音乐此前被视频暂停） */
   useEffect(() => {
@@ -166,6 +185,8 @@ const FeaturedVideo: React.FC<{ src: string; alt: string; frame?: 'fill' | 'port
     <div
       ref={containerRef}
       onClick={togglePlay}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       className="absolute inset-0 cursor-pointer"
     >
       {/* 竖版衬底：同一视频放大模糊铺满，随主画面同步播放 */}
@@ -198,8 +219,16 @@ const FeaturedVideo: React.FC<{ src: string; alt: string; frame?: 'fill' | 'port
           className={
             frame === 'portrait' ? 'h-full aspect-[3/4] object-cover' : 'w-full h-full object-cover'
           }
-          onPlay={() => setPlaying(true)}
-          onPause={() => setPlaying(false)}
+          onPlay={() => {
+            setPlaying(true);
+            /* 互斥：让当前正在播放的其他视频暂停，再接管注册表 */
+            if (pauseActiveVideo && pauseActiveVideo !== stopperRef) pauseActiveVideo.current();
+            pauseActiveVideo = stopperRef;
+          }}
+          onPause={() => {
+            setPlaying(false);
+            if (pauseActiveVideo === stopperRef) pauseActiveVideo = null;
+          }}
           onTimeUpdate={(e) => {
             const v = e.currentTarget;
             if (v.duration) setProgress(v.currentTime / v.duration);
@@ -228,11 +257,13 @@ const FeaturedVideo: React.FC<{ src: string; alt: string; frame?: 'fill' | 'port
         )
       )}
 
-      {/* 播放按钮：未播放时居中显示 */}
+      {/* 播放按钮：未播放时居中显示，悬浮时平滑淡入 */}
       {!playing && (
         <div
           aria-hidden="true"
-          className="absolute inset-0 m-auto w-14 h-14 rounded-full bg-black/45 backdrop-blur-xs border border-white/25 text-white flex items-center justify-center pointer-events-none"
+          className={`absolute inset-0 m-auto w-14 h-14 rounded-full bg-black/45 backdrop-blur-xs border border-white/25 text-white flex items-center justify-center pointer-events-none transition-all duration-200 ${
+            hovered ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+          }`}
         >
           <Play className="w-6 h-6 ml-0.5" />
         </div>
@@ -312,18 +343,22 @@ const FeaturedCarousel: React.FC<{ images: string[]; alt: string }> = ({ images,
         />
       ))}
 
-      {/* 左右切换按钮 */}
+      {/* 左右切换按钮：鼠标悬浮时淡入淡出（paused 即悬浮状态，兼作轮播暂停开关） */}
       <button
         onClick={prev}
         aria-label="上一张"
-        className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/35 backdrop-blur-xs text-white flex items-center justify-center hover:bg-black/60 transition-colors cursor-pointer"
+        className={`absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/35 backdrop-blur-xs text-white flex items-center justify-center hover:bg-black/60 transition-opacity duration-200 cursor-pointer ${
+          paused ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
       >
         <ChevronLeft className="w-4 h-4" />
       </button>
       <button
         onClick={next}
         aria-label="下一张"
-        className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/35 backdrop-blur-xs text-white flex items-center justify-center hover:bg-black/60 transition-colors cursor-pointer"
+        className={`absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/35 backdrop-blur-xs text-white flex items-center justify-center hover:bg-black/60 transition-opacity duration-200 cursor-pointer ${
+          paused ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
       >
         <ChevronRight className="w-4 h-4" />
       </button>
