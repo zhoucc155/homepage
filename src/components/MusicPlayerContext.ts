@@ -24,6 +24,7 @@ export interface MusicPlayerState {
   skipSong: () => void; // 手动切歌：跳到下一首（单曲循环模式下手动切歌仍前进到列表下一首）
   viewPlaylist: () => void; // 「查看歌单」：切到影视音乐页正在播放（或最后播放）歌曲所在歌单列表
   viewRequest: ViewPlaylistRequest | null;
+  setViewRequest: (r: ViewPlaylistRequest | null) => void; // 消费方处理完请求后清空，防止组件重挂载时旧请求复触发（切 tab 回来不定位）
   isPlaying: boolean; // 是否有歌曲正在出声（黑胶旋转/暂停态判断）
 }
 

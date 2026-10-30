@@ -2714,6 +2714,7 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
         skipSong,
         viewPlaylist,
         viewRequest,
+        setViewRequest,
         isPlaying: !!playingSong,
       }}
     >
@@ -2775,6 +2776,7 @@ export const HobbiesTab: React.FC = () => {
     lyricHoldMs,
     toggleSong,
     viewRequest,
+    setViewRequest,
   } = usePlayer();
   const [playlistOpen, setPlaylistOpen] = useState(true); // 珍藏歌单折叠态（默认展开；收起仅隐藏 UI，不打断播放）
   const [filmPicksOpen, setFilmPicksOpen] = useState(false); // 推荐片单折叠态（与珍藏歌单互斥：展开其一时另一个自动折叠）
@@ -2786,7 +2788,9 @@ export const HobbiesTab: React.FC = () => {
   // 正在播放的歌单 key（songKey 格式为 `${playlist.key}:${title}`，取前缀即可）；暂停时为 null
   const playingPlaylistKey = currentSong && playingSong ? currentSong.split(':')[0] : null;
 
-  // 「查看歌单」跳转请求（导航栏黑胶模块发起）：落到影视音乐页并展开正在播放（或最后播放）歌曲所在歌单，滚动定位到模块
+  // 「查看歌单」跳转请求（导航栏黑胶模块发起）：落到影视音乐页并展开正在播放（或最后播放）歌曲所在歌单，滚动定位到模块。
+  // 消费即清空（setViewRequest(null)）：请求不清空的话，切到其他 tab 再点导航回来时组件重挂载，
+  // 旧请求会再次触发——强制切到影视音乐页并把页面滚到歌单模块（表现为点导航不置顶反而下坠）
   React.useEffect(() => {
     if (!viewRequest) return;
     const filmIdx = HOBBIES_DATA.findIndex((h) => h.id === 'film-music');
@@ -2795,12 +2799,13 @@ export const HobbiesTab: React.FC = () => {
     setPlaylistOpen(true);
     setFilmPicksOpen(false); // 手风琴：歌单展开时片单收起
     if (viewRequest.songKey) setFocusedSong(viewRequest.songKey);
+    setViewRequest(null); // 请求已消费，防止重挂载时旧请求复触发
     const t = setTimeout(
       () => playlistAnchorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }),
       200 // 等标签页切换渲染完成后再定位
     );
     return () => clearTimeout(t);
-  }, [viewRequest, setFocusedSong]);
+  }, [viewRequest, setFocusedSong, setViewRequest]);
 
   const novelShelves: Record<string, { title: string; author: string; genre: string; thought: string }[]> = {
     '科幻宇宙': [
