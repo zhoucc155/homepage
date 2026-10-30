@@ -179,7 +179,7 @@ export const PROJECTS_DATA: ProjectItem[] = [
     year: '2025',
     client: 'WanderCity Heritage Lab',
     role: '文旅体验规划师 & 前端工程实现',
-    image: '/images/project_wandercity_flight_sunset.png',
+    image: '/images/project_wandercity_flight_sunset.jpg',
     video: '/wandercity-demo.mp4',
     videoFrame: 'portrait',
     videoPoster: '/wandercity-cover.png',
@@ -205,7 +205,7 @@ export const PROJECTS_DATA: ProjectItem[] = [
     year: '2024',
     client: 'Subculture Media Group',
     role: '社区产品主设 & 增长策略顾问',
-    image: '/images/project_acg_homepage.png',
+    image: '/images/project_acg_homepage.jpg',
     summary: '由 Gemini 与 Trae 协作共建的个人站点：从视觉设计、组件体系到交互工程全流程驱动，实现作品展示、视频呈现与项目复盘一体化，仍在持续迭代。',
     metrics: [
       { label: '前端框架', value: 'React 19 + TS 7' },
@@ -234,7 +234,7 @@ export const TRACK_PROJECTS: ProjectItem[] = [
     client: '喜马拉雅',
     role: '项目负责人',
     sideBadge: '支线：创作者生态',
-    image: '/images/audio-incubation-case-1.png',
+    image: '/images/audio-incubation-case-1.jpg',
     links: [
       { label: '设计思路', url: 'https://my.feishu.cn/docx/WZXCdVWpnoczZ1xDGgrcBC3Vn9g' },
       { label: '培训课程', url: 'https://www.ximalaya.com/zhubo/101088648' },
@@ -265,7 +265,7 @@ export const TRACK_PROJECTS: ProjectItem[] = [
     client: '喜马拉雅',
     role: '项目运营负责人',
     sideBadge: '支线：内容生态',
-    image: '/images/discover-community.png',
+    image: '/images/discover-community.jpg',
     summary: '主导喜马发现页社区 0-1 建设，包括社区治理、内容冷启动、标签体系、话题策划、推荐逻辑、数据看板、氛围营造、种子用户运营等。',
     metrics: [
       { label: '社区公域 UV', value: '22万 → 70万' },
@@ -292,7 +292,7 @@ export const TRACK_PROJECTS: ProjectItem[] = [
     client: '第一弹',
     role: '活动负责人',
     sideBadge: '支线：用户增长',
-    image: '/images/siblings-test.png',
+    image: '/images/siblings-test.jpg',
     summary: '洞察二次元用户对身份认同和社交表达的需求，融合攀比心理、圈层传播、抽卡机制设计轻量测试撬动自然增长，在不投放预算的前提下完成精准用户的规模化拉新。',
     metrics: [
       { label: '精准拉新用户', value: '4300+' },
@@ -319,8 +319,8 @@ export const TRACK_PROJECTS: ProjectItem[] = [
     client: '携程',
     role: '直播策略运营',
     sideBadge: '支线：商业化增长',
-    image: '/images/ctrip-douyin-cover.png',
-    gallery: ['/images/ctrip-douyin.png'],
+    image: '/images/ctrip-douyin-cover.jpg',
+    gallery: ['/images/ctrip-douyin.jpg'],
     summary: '区分站内用户和抖音公域用户的核心底层差异，基于抖音算法标签推流逻辑，重构整套选品、讲解、运营体系。',
     metrics: [
       { label: '直播间 CTR 提升', value: '+200%' },
@@ -349,7 +349,7 @@ export const TRACK_PROJECTS: ProjectItem[] = [
     role: '社区内容运营 & 生态建设',
     sideBadge: '支线：内容生态',
     hideModalFooter: true,
-    image: '/images/voice-ecosystem.png',
+    image: '/images/voice-ecosystem.jpg',
     summary: '围绕二次元配音内容建立内容聚集场景，拓展平台原有的内容形态，从0到1搭建配音区并推动评论区语音功能落地。',
     metrics: [
       { label: '社团及工作室引入', value: '80+' },
@@ -409,7 +409,7 @@ export const TRACK_PROJECTS: ProjectItem[] = [
     client: '喜马拉雅',
     role: '创作者生态直播侧负责人',
     sideBadge: '支线：创作者生态',
-    image: '/images/creator-livestream.png',
+    image: '/images/creator-livestream.jpg',
     summary: '负责录播主播直播化项目的策略设计和运营落地，包括主播转化路径设计、标杆主播筛选包装，以及直播内容活动策划。',
     metrics: [
       { label: '核心品类 DAU', value: '+40%' },
@@ -438,7 +438,7 @@ export const TRACK_PROJECTS: ProjectItem[] = [
     client: '喜马拉雅',
     role: '创作者生态直播侧负责人',
     sideBadge: '支线：创作者生态',
-    image: '/images/creator-record.png',
+    image: '/images/creator-record.jpg',
     summary: '负责直转录方向的内容活动策划和落地，分别从主播侧、内容侧、分发侧出发，设计活动机制、内容主题和激励制度，跟进数据问题反哺运营迭代。',
     metrics: [
       { label: '单月新增专辑数', value: '90+' },
@@ -466,7 +466,7 @@ export const TRACK_PROJECTS: ProjectItem[] = [
     client: '携程',
     role: '平台化直播策略运营',
     sideBadge: '支线：创作者生态',
-    image: '/images/multi-role-eco.png',
+    image: '/images/multi-role-eco.jpg',
     summary: '搭建直播生态运营体系，设计主播等级、信用分体系、开播教程及运营规范，推动酒店、航司、景区、旅行社、向导、达人等多角色参与，降低参与门槛。',
     metrics: [
       { label: '单季度引入达人', value: '100+' },
@@ -497,7 +497,7 @@ export const TRACK_PROJECTS: ProjectItem[] = [
     client: '喜马拉雅',
     role: '创作者运营',
     sideBadge: '支线：创作者生态',
-    image: '/images/mcn-community.png',
+    image: '/images/mcn-community.jpg',
     summary: '升级平台对主播的管理体系，包括核心主播社群运营机制优化，以及官方MCN从0到1的搭建，建立更直接的主播招募、培养、签约和运营能力。',
     metrics: [
       { label: '管理社群数', value: '10+' },
@@ -552,7 +552,7 @@ export const TRACK_PROJECTS: ProjectItem[] = [
     client: '第一弹',
     role: '活动策划 & 商务拓展',
     sideBadge: '支线：商业化探索',
-    image: '/images/ip-campaign.png',
+    image: '/images/ip-campaign.jpg',
     gallery: ['/images/ip-campaign-case-1.png'],
     summary: '尝试将配音社团/工作室纳入品牌营销商业合作，探索创作者商业化路径和长期合作机制。',
     metrics: [
@@ -649,7 +649,7 @@ export const HOBBIES_DATA: HobbyItem[] = [
     title: '硬核电竞与战术竞技',
     englishTitle: 'Esports & Gaming',
     tagline: '毫秒级决策与大局观的极限博弈',
-    image: '/images/project_gaming_esports_1793190000000.png',
+    image: '/images/project_gaming_esports_1793190000000.jpg',
     category: 'Competitive Flow',
     specs: [
       { label: '关注项目', value: '英雄联盟 / DOTA2 / PUBG' },
@@ -707,7 +707,7 @@ export const HOBBIES_DATA: HobbyItem[] = [
     title: '时政观察与历史纵深阅读',
     englishTitle: 'History & Geopolitics',
     tagline: '理解今天，需要读懂昨天',
-    image: '/images/hobby_affairs_history.png',
+    image: '/images/hobby_affairs_history.jpg',
     category: 'Context & Insight',
     specs: [
       { label: '关注领域', value: '宏观趋势 / 产业政策 / 中外历史' },

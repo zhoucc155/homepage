@@ -21,6 +21,8 @@ export const ProjectCover: React.FC<ProjectCoverProps> = ({ src, alt, className 
       alt=""
       aria-hidden="true"
       referrerPolicy="no-referrer"
+      loading="lazy"
+      decoding="async"
       draggable={false}
       className={`absolute inset-0 w-full h-full object-cover scale-110 blur-lg brightness-90 transition-transform duration-500 group-hover:scale-112 ${className}`}
     />
@@ -29,6 +31,8 @@ export const ProjectCover: React.FC<ProjectCoverProps> = ({ src, alt, className 
       src={src}
       alt={alt}
       referrerPolicy="no-referrer"
+      loading="lazy"
+      decoding="async"
       draggable={false}
       className={`absolute inset-0 w-full h-full ${fit === 'cover' ? 'object-cover' : 'object-contain'} transition-transform duration-500 group-hover:scale-102 ${className}`}
     />

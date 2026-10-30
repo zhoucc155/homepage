@@ -64,6 +64,8 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
               alt={`${project.title} · 案例图 ${imageIndex}`}
               className="w-full h-full object-contain animate-in fade-in duration-300"
               referrerPolicy="no-referrer"
+              loading="lazy"
+              decoding="async"
             />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex items-end p-6 pointer-events-none">

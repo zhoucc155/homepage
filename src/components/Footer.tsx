@@ -23,6 +23,8 @@ export const Footer: React.FC<FooterProps> = ({ onTabChange, onOpenContact }) =>
               <img
                 src="/images/avatar_kino.png"
                 alt={PERSONAL_INFO.name}
+                loading="lazy"
+                decoding="async"
                 className="w-7 h-7 rounded-full object-cover"
               />
               <span className="font-bold text-base tracking-tight text-neutral-900">

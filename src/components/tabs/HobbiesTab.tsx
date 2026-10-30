@@ -3201,6 +3201,8 @@ export const HobbiesTab: React.FC = () => {
                   src={hobby.image}
                   alt={hobby.title}
                   referrerPolicy="no-referrer"
+                  loading="lazy"
+                  decoding="async"
                   className={`w-full h-full object-cover transition-transform duration-500 ease-out ${msgActive ? '' : 'group-hover:scale-102'}`}
                 />
                 {/* 左上角英文角标 */}

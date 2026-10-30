@@ -244,6 +244,8 @@ const FeaturedVideo: React.FC<{ src: string; alt: string; frame?: 'fill' | 'port
               src={poster}
               alt=""
               aria-hidden="true"
+              loading="lazy"
+              decoding="async"
               className="h-full aspect-[3/4] object-cover"
             />
           </div>
@@ -252,6 +254,8 @@ const FeaturedVideo: React.FC<{ src: string; alt: string; frame?: 'fill' | 'port
             src={poster}
             alt=""
             aria-hidden="true"
+            loading="lazy"
+            decoding="async"
             className="absolute inset-0 w-full h-full object-cover pointer-events-none"
           />
         )
@@ -337,6 +341,8 @@ const FeaturedCarousel: React.FC<{ images: string[]; alt: string }> = ({ images,
           src={src}
           alt={alt}
           referrerPolicy="no-referrer"
+          loading="lazy"
+          decoding="async"
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
             i === index ? 'opacity-100' : 'opacity-0'
           }`}

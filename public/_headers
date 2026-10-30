@@ -1,0 +1,7 @@
+# Cloudflare Pages 静态资源缓存策略：图片/视频内容不常变更，浏览器缓存一天，
+# 减少重复访问时对每张图的回源校验（替换同名文件后最多 24h 生效）
+/images/*
+  Cache-Control: public, max-age=86400
+
+/videos/*
+  Cache-Control: public, max-age=86400
