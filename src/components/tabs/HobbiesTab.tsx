@@ -2492,7 +2492,8 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
   };
 
   // 开播一首歌：断点清零 + 重挂 iframe（key 递增）+ 歌词从零起表
-  // （全新起播 iframe 传 t=1：非零起点可覆盖 B 站播放器的跨站观看记忆，避免未播放过的歌从 B 站历史进度续播）
+  // （全新起播 iframe 传 t=0.01：非零值即可覆盖 B 站播放器的跨站观看记忆、避免未播放过的歌从 B 站历史进度续播；
+  //   实测支持小数 t，取趋近 0 的值避免跳过歌曲开头——曾用 t=1 导致每首歌开头丢 1 秒）
   const startSong = (key: string) => {
     elapsedBaseRef.current = 0;
     setCurrentSong(key);
@@ -2619,7 +2620,7 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
         {playingSong && playingSong.bvid && (
           <iframe
             key={playNonce}
-            src={`https://player.bilibili.com/player.html?bvid=${playingSong.bvid}&autoplay=1&danmaku=0&t=${elapsedBaseRef.current >= 1 ? Math.max(0, elapsedBaseRef.current - RESUME_SEEK_BACK_S).toFixed(1) : '1'}`}
+            src={`https://player.bilibili.com/player.html?bvid=${playingSong.bvid}&autoplay=1&danmaku=0&t=${elapsedBaseRef.current >= 1 ? Math.max(0, elapsedBaseRef.current - RESUME_SEEK_BACK_S).toFixed(1) : '0.01'}`}
             allow="autoplay; encrypted-media"
             title={playingSong.title}
             className="h-px w-px border-0"
