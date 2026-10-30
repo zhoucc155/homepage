@@ -2800,11 +2800,13 @@ export const HobbiesTab: React.FC = () => {
     setFilmPicksOpen(false); // 手风琴：歌单展开时片单收起
     if (viewRequest.songKey) setFocusedSong(viewRequest.songKey);
     setViewRequest(null); // 请求已消费，防止重挂载时旧请求复触发
-    const t = setTimeout(
+    // 200ms 后等标签页切换渲染完成再定位。这里刻意不返回 cleanup 清定时器：
+    // setViewRequest(null) 会立刻重跑本 effect（依赖变化），cleanup 会先把未到点的滚动取消，导致「查看歌单」不再定位；
+    // 定时器若在组件卸载后触发，对游离节点 scrollIntoView 是无害空操作，无需清理
+    setTimeout(
       () => playlistAnchorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }),
-      200 // 等标签页切换渲染完成后再定位
+      200
     );
-    return () => clearTimeout(t);
   }, [viewRequest, setFocusedSong, setViewRequest]);
 
   const novelShelves: Record<string, { title: string; author: string; genre: string; thought: string }[]> = {
