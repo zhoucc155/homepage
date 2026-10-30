@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ProjectItem } from '../types';
 import { X, Layers, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 import { ProjectCover } from './ProjectCover';
+import { resolveImg, onImgError } from '../data/portfolioData';
 
 interface ProjectModalProps {
   project: ProjectItem | null;
@@ -60,7 +61,9 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
           ) : (
             <img
               key={imageIndex}
-              src={images[imageIndex]}
+              src={resolveImg(images[imageIndex])}
+              data-src={images[imageIndex]}
+              onError={onImgError}
               alt={`${project.title} · 案例图 ${imageIndex}`}
               className="w-full h-full object-contain animate-in fade-in duration-300"
               referrerPolicy="no-referrer"

@@ -1,4 +1,5 @@
 import React from 'react';
+import { resolveImg, onImgError } from '../data/portfolioData';
 
 interface ProjectCoverProps {
   src: string;
@@ -17,7 +18,9 @@ export const ProjectCover: React.FC<ProjectCoverProps> = ({ src, alt, className 
   <>
     {/* 衬底：同图放大模糊铺满，填充主图未覆盖区域 */}
     <img
-      src={src}
+      src={resolveImg(src)}
+      data-src={src}
+      onError={onImgError}
       alt=""
       aria-hidden="true"
       referrerPolicy="no-referrer"
@@ -28,7 +31,9 @@ export const ProjectCover: React.FC<ProjectCoverProps> = ({ src, alt, className 
     />
     {/* 主图：保持原比例、居中、不裁剪 */}
     <img
-      src={src}
+      src={resolveImg(src)}
+      data-src={src}
+      onError={onImgError}
       alt={alt}
       referrerPolicy="no-referrer"
       loading="lazy"

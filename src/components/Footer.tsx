@@ -1,6 +1,6 @@
 import React from 'react';
 import { TabKey } from '../types';
-import { PERSONAL_INFO } from '../data/portfolioData';
+import { PERSONAL_INFO, resolveImg, onImgError } from '../data/portfolioData';
 import { ArrowUp, Mail } from 'lucide-react';
 
 interface FooterProps {
@@ -21,7 +21,9 @@ export const Footer: React.FC<FooterProps> = ({ onTabChange, onOpenContact }) =>
           <div className="md:col-span-5 space-y-3">
             <div className="flex items-center gap-2.5">
               <img
-                src="/images/avatar_kino.png"
+                src={resolveImg('/images/avatar_kino.png')}
+                data-src="/images/avatar_kino.png"
+                onError={onImgError}
                 alt={PERSONAL_INFO.name}
                 loading="lazy"
                 decoding="async"

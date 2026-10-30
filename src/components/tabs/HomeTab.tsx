@@ -1,8 +1,10 @@
 import React from 'react';
 import { TabKey, ProjectItem } from '../../types';
-import { 
-  PERSONAL_INFO, 
-  PROJECTS_DATA 
+import {
+  PERSONAL_INFO,
+  PROJECTS_DATA,
+  resolveImg,
+  onImgError
 } from '../../data/portfolioData';
 import {
   Search,
@@ -76,7 +78,9 @@ export const HomeTab: React.FC<HomeTabProps> = ({
             <div className="relative group w-full max-w-sm aspect-square rounded-3xl bg-amber-50 border border-neutral-200/90 shadow-[0_8px_30px_rgb(0,0,0,0.06)] p-1.5 flex items-center justify-center overflow-hidden transition-all duration-300 hover:shadow-[0_12px_40px_rgb(0,0,0,0.08)]">
               <div className="w-full h-full rounded-2xl overflow-hidden bg-amber-100/50 relative flex items-center justify-center">
                 <img
-                  src={PERSONAL_INFO.avatar}
+                  src={resolveImg(PERSONAL_INFO.avatar)}
+                  data-src={PERSONAL_INFO.avatar}
+                  onError={onImgError}
                   alt={PERSONAL_INFO.name}
                   className="w-full h-full object-cover scale-105 group-hover:scale-110 group-hover:rotate-2 transition-transform duration-300"
                   referrerPolicy="no-referrer"

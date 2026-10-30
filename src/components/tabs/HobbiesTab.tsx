@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { HOBBIES_DATA } from '../../data/portfolioData';
+import { HOBBIES_DATA, resolveImg, onImgError } from '../../data/portfolioData';
 import { MessageBoardOverlay } from '../MessageBoardOverlay';
 import { usePlayer, MusicPlayerContext } from '../MusicPlayerContext';
 import type { PlayMode, ViewPlaylistRequest } from '../MusicPlayerContext';
@@ -3205,7 +3205,9 @@ export const HobbiesTab: React.FC = () => {
                 onClick={() => setMsgActive(true)}
               >
                 <img
-                  src={hobby.image}
+                  src={resolveImg(hobby.image)}
+                  data-src={hobby.image}
+                  onError={onImgError}
                   alt={hobby.title}
                   referrerPolicy="no-referrer"
                   loading="lazy"

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ProjectItem } from '../../types';
-import { PROJECTS_DATA } from '../../data/portfolioData';
+import { PROJECTS_DATA, resolveImg, onImgError } from '../../data/portfolioData';
 import { ProjectCover } from '../ProjectCover';
 import {
   Sparkles,
@@ -241,7 +241,9 @@ const FeaturedVideo: React.FC<{ src: string; alt: string; frame?: 'fill' | 'port
         frame === 'portrait' ? (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <img
-              src={poster}
+              src={resolveImg(poster)}
+              data-src={poster}
+              onError={onImgError}
               alt=""
               aria-hidden="true"
               loading="lazy"
@@ -251,7 +253,9 @@ const FeaturedVideo: React.FC<{ src: string; alt: string; frame?: 'fill' | 'port
           </div>
         ) : (
           <img
-            src={poster}
+            src={resolveImg(poster)}
+            data-src={poster}
+            onError={onImgError}
             alt=""
             aria-hidden="true"
             loading="lazy"
@@ -338,7 +342,9 @@ const FeaturedCarousel: React.FC<{ images: string[]; alt: string }> = ({ images,
       {images.map((src, i) => (
         <img
           key={src}
-          src={src}
+          src={resolveImg(src)}
+          data-src={src}
+          onError={onImgError}
           alt={alt}
           referrerPolicy="no-referrer"
           loading="lazy"

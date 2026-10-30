@@ -1,4 +1,20 @@
+import type { SyntheticEvent } from 'react';
 import { ProjectItem, ServiceItem, ArticleItem, MilestoneItem, AestheticColorGroup, HobbyItem } from '../types';
+
+/* 图片 CDN：国内直连 pages.dev 实测仅 24~41KB/s（图片慢的根因），jsDelivr testingcf 节点实测 ~140-380KB/s。
+   jsDelivr 直读 GitHub 公开仓库的 public/images（主域名 cdn.jsdelivr.net 在国内被干扰，故用 testingcf 子域）。
+   <img> 一律 src={resolveImg(path)} + data-src={path} + onError={onImgError}：CDN 失败自动回退站内同路径 */
+export const IMG_CDN_BASE = 'https://testingcf.jsdelivr.net/gh/zhoucc155/homepage@main/public';
+export const resolveImg = (path: string) => (path.startsWith('/images/') ? IMG_CDN_BASE + path : path);
+export const onImgError = (e: SyntheticEvent<HTMLImageElement>) => {
+  const el = e.currentTarget;
+  if (el.dataset.fell) return;
+  const fallback = el.getAttribute('data-src');
+  if (fallback) {
+    el.dataset.fell = '1';
+    el.src = fallback;
+  }
+};
 
 export const PERSONAL_INFO = {
   name: 'Charline / 周晏宁',
