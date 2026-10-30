@@ -2573,24 +2573,30 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     startSong(ALL_SONG_KEYS[r]);
   };
 
-  // 播完自动切歌：B 站 iframe 无跨域结束事件，按配置时长定时近似检测（+2s 出声延迟余量；续播时扣除回退补偿）。
-  // 定时优先走 Web Worker（后台标签页不被可见性节流，保证后台连播），Worker 不可用时回退主线程 setTimeout
+  // 播完自动切歌：B 站 iframe 无跨域结束事件，只能按配置时长定时近似检测。
+  // 关键：定时锚点用 iframe 的 onLoad（播放器资源就绪）而非组件挂载——出声前的加载/起播延迟可变
+  // （Hi-Res 大文件、慢网络、后台标签页节流更长），若在挂载时定死「时长+固定余量」，起播一慢就会提前掐断歌尾。
+  // 余量只需覆盖 onLoad 之后的起播 boot：前台约 4s；后台无声页面里起播被浏览器节流大幅拉长，用 30s 大余量防掐断。
+  // 定时走 Web Worker（后台标签页不被可见性节流，保证后台到点切歌），Worker 不可用时回退主线程 setTimeout
+  const frameArmRef = React.useRef<(() => void) | null>(null);
   React.useEffect(() => {
     if (!playingSong || !playingSong.duration || !currentSong) return;
     const [m, s] = playingSong.duration.split(':').map(Number);
-    const played = Math.max(0, elapsedBaseRef.current - RESUME_SEEK_BACK_S);
-    const delay = Math.max(3000, (m * 60 + s - played) * 1000 + 2000);
+    const remaining = Math.max(1, m * 60 + s - Math.max(0, elapsedBaseRef.current - RESUME_SEEK_BACK_S));
     const w = getAdvanceTimerWorker();
     if (w) {
       const onFire = () => advanceSong(false);
+      frameArmRef.current = () => {
+        w.postMessage({ ms: remaining * 1000 + (document.hidden ? 30000 : 4000) });
+      };
       w.addEventListener('message', onFire);
-      w.postMessage({ ms: delay });
       return () => {
+        frameArmRef.current = null;
         w.removeEventListener('message', onFire);
         w.postMessage({ ms: null });
       };
     }
-    const timer = setTimeout(() => advanceSong(false), delay);
+    const timer = setTimeout(() => advanceSong(false), remaining * 1000 + 2000);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playingSong, songPaused, playMode, currentSong]);
@@ -2623,6 +2629,7 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
             src={`https://player.bilibili.com/player.html?bvid=${playingSong.bvid}&autoplay=1&danmaku=0&t=${elapsedBaseRef.current >= 1 ? Math.max(0, elapsedBaseRef.current - RESUME_SEEK_BACK_S).toFixed(1) : '0.01'}`}
             allow="autoplay; encrypted-media"
             title={playingSong.title}
+            onLoad={() => frameArmRef.current?.()}
             className="h-px w-px border-0"
           />
         )}
