@@ -3298,7 +3298,7 @@ export const HobbiesTab: React.FC = () => {
             <div className={`w-full lg:col-span-6 self-stretch flex flex-col order-2 ${isImageLeft ? 'lg:order-1' : 'lg:order-2'}`}>
               <div
                 data-hobby-card={hobby.id}
-                className={`relative w-full h-[360px] sm:h-[480px] lg:h-full min-h-[460px] lg:min-h-[580px] ${hobby.id === 'film-music' || hobby.id === 'esports-gaming' || hobby.id === 'affairs-history' ? 'lg:max-h-[580px]' : ''} rounded-2xl border border-neutral-200 overflow-hidden shadow-xs bg-neutral-900 group ${msgActive ? '' : 'cursor-pointer'}`}
+                className={`relative w-full h-[360px] sm:h-[480px] lg:h-full min-h-[460px] lg:min-h-[580px] lg:max-h-[580px] rounded-2xl border border-neutral-200 overflow-hidden shadow-xs bg-neutral-900 group ${msgActive ? '' : 'cursor-pointer'}`}
                 onClick={() => setMsgActive(true)}
               >
                 <img
