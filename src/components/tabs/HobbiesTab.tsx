@@ -2454,6 +2454,23 @@ const ALL_SONG_KEYS: string[] = PLAYLIST_TABS.flatMap((p) => p.songs.map((s) => 
 // 全局音乐播放器 Provider：播放状态提升至应用根部，导航栏黑胶与影视音乐歌单页共享同一份状态；
 // 音频 iframe 挂在 Provider 根部而非歌单页内——切换任意 tab 播放不中断（全局播放器重构：已删除网易云分支）
 // ============================================================
+/* 后台连播定时器：浏览器对隐藏页的主线程 setTimeout 强节流（歌曲播完音频停止后失去豁免，定时器可被挂起到分钟级），
+   导致后台播完不切歌、回到前台才连播。Worker 内定时不受可见性节流，专用于播完自动切歌 */
+let advanceTimerWorker: Worker | null = null;
+const getAdvanceTimerWorker = (): Worker | null => {
+  if (typeof Worker === 'undefined') return null;
+  if (!advanceTimerWorker) {
+    try {
+      const code =
+        'let id=null;self.onmessage=e=>{const d=e.data||{};if(id){clearTimeout(id);id=null}if(d.ms!=null){id=setTimeout(()=>self.postMessage("fire"),d.ms)}};';
+      advanceTimerWorker = new Worker(URL.createObjectURL(new Blob([code], { type: 'application/javascript' })));
+    } catch {
+      return null;
+    }
+  }
+  return advanceTimerWorker;
+};
+
 export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentSong, setCurrentSong] = useState<string | null>(null); // 当前播放歌曲（歌单 key:歌名）
   const [songPaused, setSongPaused] = useState(false); // 当前歌曲是否处于暂停态
@@ -2555,12 +2572,24 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     startSong(ALL_SONG_KEYS[r]);
   };
 
-  // 播完自动切歌：B 站 iframe 无跨域结束事件，按配置时长定时近似检测（+2s 出声延迟余量；续播时扣除回退补偿）
+  // 播完自动切歌：B 站 iframe 无跨域结束事件，按配置时长定时近似检测（+2s 出声延迟余量；续播时扣除回退补偿）。
+  // 定时优先走 Web Worker（后台标签页不被可见性节流，保证后台连播），Worker 不可用时回退主线程 setTimeout
   React.useEffect(() => {
     if (!playingSong || !playingSong.duration || !currentSong) return;
     const [m, s] = playingSong.duration.split(':').map(Number);
     const played = Math.max(0, elapsedBaseRef.current - RESUME_SEEK_BACK_S);
-    const timer = setTimeout(() => advanceSong(false), Math.max(3000, (m * 60 + s - played) * 1000 + 2000));
+    const delay = Math.max(3000, (m * 60 + s - played) * 1000 + 2000);
+    const w = getAdvanceTimerWorker();
+    if (w) {
+      const onFire = () => advanceSong(false);
+      w.addEventListener('message', onFire);
+      w.postMessage({ ms: delay });
+      return () => {
+        w.removeEventListener('message', onFire);
+        w.postMessage({ ms: null });
+      };
+    }
+    const timer = setTimeout(() => advanceSong(false), delay);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playingSong, songPaused, playMode, currentSong]);
