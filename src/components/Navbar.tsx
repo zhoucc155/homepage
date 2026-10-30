@@ -50,16 +50,27 @@ export const Navbar: React.FC<NavbarProps> = ({
   // DVD 抽屉显隐：唱片与抽屉是分离区域（抽屉 z 层在导航栏下方），用状态+关闭宽限计时保持 hover 连续性
   const [drawerOpen, setDrawerOpen] = useState(false);
   const drawerCloseTimer = React.useRef<number | null>(null);
-  const openDrawer = () => {
+  const cancelDrawerClose = () => {
     if (drawerCloseTimer.current) {
       window.clearTimeout(drawerCloseTimer.current);
       drawerCloseTimer.current = null;
     }
+  };
+  const openDrawer = () => {
+    cancelDrawerClose();
     setDrawerOpen(true);
   };
   const scheduleDrawerClose = () => {
-    if (drawerCloseTimer.current) window.clearTimeout(drawerCloseTimer.current);
+    cancelDrawerClose();
     drawerCloseTimer.current = window.setTimeout(() => setDrawerOpen(false), 150); // 150ms 宽限：横穿唱片与抽屉之间的空隙不收起
+  };
+  // 过渡带宽限（导航胶囊左端 72px：唱片及其左右一小段）：唱片→抽屉的路要经过被胶囊盖住的死区，
+  // 过渡带内任何鼠标移动都取消收起计时，途中停顿再慢也不会收走；移出过渡带（向右进入导航区）
+  // 或离开胶囊则恢复 150ms 收起倒计时，不改变「悬停导航时抽屉收起」的原有行为
+  const onCapsuleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    if (e.clientX - rect.left <= 72) cancelDrawerClose();
+    else if (drawerCloseTimer.current) scheduleDrawerClose();
   };
   React.useEffect(
     () => () => {
@@ -134,7 +145,11 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       </div>
       {/* Floating Pill Nav Bar matching Image 1 layout, clean & sleek */}
-      <div className="relative z-20 bg-white/90 backdrop-blur-md border border-neutral-200/90 rounded-full px-4 sm:px-6 py-2.5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.06)] flex items-center justify-between gap-4">
+      <div
+        className="relative z-20 bg-white/90 backdrop-blur-md border border-neutral-200/90 rounded-full px-4 sm:px-6 py-2.5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.06)] flex items-center justify-between gap-4"
+        onMouseMove={onCapsuleMouseMove}
+        onMouseLeave={scheduleDrawerClose}
+      >
         {/* Left zone: avatar + desktop navigation links */}
         <div className="flex items-center gap-4">
           {/* 黑胶唱片播放器：头像即唱片，播放时缓慢顺时针旋转；悬浮显示播放/暂停，并触发 DVD 抽屉从导航栏左侧抽出 */}
