@@ -312,7 +312,7 @@ export const AchievementsTab: React.FC<AchievementsTabProps> = ({ onSelectProjec
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="group bg-neutral-800/80 border border-neutral-700/80 rounded-2xl p-6 space-y-4">
+          <div className="group bg-neutral-800/80 border border-neutral-700/80 rounded-2xl p-6 space-y-4 transition-colors duration-200 hover:border-neutral-400/90 hover:bg-neutral-800">
             <div className="inline-block text-lg font-bold text-neutral-800 bg-rose-400 px-3 py-0.5">竞品分成规则调研分析</div>
             <p className="pl-3 border-l border-neutral-300 text-sm text-neutral-300 leading-relaxed italic">
               <span className="block">网易云入局音频直播，其分成规则会对喜马造成多大冲击？</span>
@@ -330,7 +330,7 @@ export const AchievementsTab: React.FC<AchievementsTabProps> = ({ onSelectProjec
             </div>
           </div>
 
-          <div className="group bg-neutral-800/80 border border-neutral-700/80 rounded-2xl p-6 space-y-4">
+          <div className="group bg-neutral-800/80 border border-neutral-700/80 rounded-2xl p-6 space-y-4 transition-colors duration-200 hover:border-neutral-400/90 hover:bg-neutral-800">
             <div className="inline-block text-lg font-bold text-neutral-800 bg-[#48BFE3] px-3 py-0.5">计划新开直播间ROI测算</div>
             <p className="pl-3 border-l border-neutral-300 text-sm text-neutral-300 leading-relaxed italic">
               <span className="block">团队计划新开区域直播间，问题是选择什么区域？ROI如何？</span>
@@ -348,7 +348,7 @@ export const AchievementsTab: React.FC<AchievementsTabProps> = ({ onSelectProjec
             </div>
           </div>
 
-          <div className="group bg-neutral-800/80 border border-neutral-700/80 rounded-2xl p-6 space-y-4">
+          <div className="group bg-neutral-800/80 border border-neutral-700/80 rounded-2xl p-6 space-y-4 transition-colors duration-200 hover:border-neutral-400/90 hover:bg-neutral-800">
             <div className="inline-block text-lg font-bold text-neutral-800 bg-amber-300 px-3 py-0.5">数据口径修正及经营诊断</div>
             <p className="pl-3 border-l border-neutral-300 text-sm text-neutral-300 leading-relaxed italic">
               <span className="block">对现有看板的字段定义逐一拆解，洞悉业务面临的挑战与机会。</span>
@@ -356,7 +356,7 @@ export const AchievementsTab: React.FC<AchievementsTabProps> = ({ onSelectProjec
             </p>
           </div>
 
-          <div className="group bg-neutral-800/80 border border-neutral-700/80 rounded-2xl p-6 space-y-4">
+          <div className="group bg-neutral-800/80 border border-neutral-700/80 rounded-2xl p-6 space-y-4 transition-colors duration-200 hover:border-neutral-400/90 hover:bg-neutral-800">
             <div className="inline-block text-lg font-bold text-neutral-800 bg-violet-300 px-3 py-0.5">量化商品售卖的生命周期</div>
             <p className="pl-3 border-l border-neutral-300 text-sm text-neutral-300 leading-relaxed italic">
               <span className="block">如何评估引流品/爆品效果？怎么判断该不该换品？</span>
