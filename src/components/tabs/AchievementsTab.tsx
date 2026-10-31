@@ -357,7 +357,7 @@ export const AchievementsTab: React.FC<AchievementsTabProps> = ({ onSelectProjec
           </div>
 
           <div className="group bg-neutral-800/80 border border-neutral-700/80 rounded-2xl p-6 space-y-4 transition-colors duration-200 hover:border-neutral-400/90 hover:bg-neutral-800">
-            <div className="inline-block text-lg font-bold text-neutral-800 bg-violet-300 px-3 py-0.5">量化商品售卖的生命周期</div>
+            <div className="inline-block text-lg font-bold text-neutral-800 bg-violet-300 px-3 py-0.5">分析并搭建货盘流转SOP</div>
             <p className="pl-3 border-l border-neutral-300 text-sm text-neutral-300 leading-relaxed italic">
               <span className="block">如何评估引流品/爆品效果？怎么判断该不该换品？</span>
               <span className="block mt-2">总结归纳过往引流品/爆品的售卖规律，包括上架后的流量涨跌、成交曲线、带动复购率等，定义爆品孵化周期和衰退周期；建立货盘动态流转机制，达到衰退指标时开始过渡换品。</span>
