@@ -138,7 +138,7 @@ export const AchievementsTab: React.FC<AchievementsTabProps> = ({ onSelectProjec
               创作者孵化效率提升
             </div>
             <p className="text-[11px] text-neutral-500 mt-1 leading-relaxed">
-              从 0 搭建主播成长体系，新主播 7 日留存提升 40%。
+              从 0 搭建主播成长体系并推动产品化，承接每月近 2 万名新主播的规模化成长需求。
             </p>
           </div>
         </div>
@@ -159,7 +159,7 @@ export const AchievementsTab: React.FC<AchievementsTabProps> = ({ onSelectProjec
               增长玩法3天新增UV
             </div>
             <p className="text-[11px] text-neutral-500 mt-1 leading-relaxed">
-              用鉴定结果激活潜在用户，建立用户与内容的连接。
+              用鉴定结果激活潜在用户，建立用户与业务场景的连接。
             </p>
           </div>
         </div>
@@ -346,6 +346,22 @@ export const AchievementsTab: React.FC<AchievementsTabProps> = ({ onSelectProjec
                 查看分析思路
               </a>
             </div>
+          </div>
+
+          <div className="group bg-neutral-800/80 border border-neutral-700/80 rounded-2xl p-6 space-y-4">
+            <div className="inline-block text-lg font-bold text-neutral-800 bg-amber-300 px-3 py-0.5">数据口径修正及经营诊断</div>
+            <p className="pl-3 border-l border-neutral-300 text-sm text-neutral-300 leading-relaxed italic">
+              <span className="block">对现有看板的字段定义逐一拆解，洞悉业务面临的挑战与机会。</span>
+              <span className="block mt-2">修正“核销率”的数据口径，避免因口径问题造成数据虚高导致决策误判。同时针对业务核心卡点，多角度分析影响因素并给出针对性解法。</span>
+            </p>
+          </div>
+
+          <div className="group bg-neutral-800/80 border border-neutral-700/80 rounded-2xl p-6 space-y-4">
+            <div className="inline-block text-lg font-bold text-neutral-800 bg-violet-300 px-3 py-0.5">量化商品售卖的生命周期</div>
+            <p className="pl-3 border-l border-neutral-300 text-sm text-neutral-300 leading-relaxed italic">
+              <span className="block">如何评估引流品/爆品效果？怎么判断该不该换品？</span>
+              <span className="block mt-2">总结归纳过往引流品/爆品的售卖规律，包括上架后的流量涨跌、成交曲线、带动复购率等，定义爆品孵化周期和衰退周期；建立货盘动态流转机制，达到衰退指标时开始过渡换品。</span>
+            </p>
           </div>
         </div>
       </section>

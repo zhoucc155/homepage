@@ -24,7 +24,7 @@ const TRACK_RECORDS: { digit: string; unit: string; tag: string; title: string; 
     unit: '个月',
     tag: '机制飞轮',
     title: '搭建创作者成长体系，将孵化周期从 3 个月缩短为 1 个月',
-    desc: '从0开始试点重运营，摸清创作者成长过程中的高流失节点，制定阶段性任务和配套课程并推动产品化落地。',
+    desc: '从0开始试点重运营，摸清创作者成长过程中的高流失节点，制定阶段性任务和配套课程并推动产品化落地，承接每月近 2 万名新人的规模化成长需求。',
     resultLabel: '孵化效率提升 200%',
     result: '3M → 1M'
   },
