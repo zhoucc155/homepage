@@ -5,3 +5,16 @@
 
 /videos/*
   Cache-Control: public, max-age=86400
+
+# 根目录下的封面与视频（CDN 失败时的站内回退路径，同样需要缓存）
+/jobhunter-demo.mp4
+  Cache-Control: public, max-age=86400
+
+/wandercity-demo.mp4
+  Cache-Control: public, max-age=86400
+
+/jobhunter-cover.jpg
+  Cache-Control: public, max-age=86400
+
+/wandercity-cover.png
+  Cache-Control: public, max-age=86400

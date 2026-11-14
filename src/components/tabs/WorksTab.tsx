@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ProjectItem } from '../../types';
-import { PROJECTS_DATA, resolveImg, onImgError } from '../../data/portfolioData';
+import { PROJECTS_DATA, resolveImg, onImgError, resolveVideo, onVideoError } from '../../data/portfolioData';
 import { ProjectCover } from '../ProjectCover';
 import {
   Sparkles,
@@ -193,7 +193,9 @@ const FeaturedVideo: React.FC<{ src: string; alt: string; frame?: 'fill' | 'port
       {frame === 'portrait' && (
         <video
           ref={backdropRef}
-          src={src}
+          src={resolveVideo(src)}
+          data-src={src}
+          onError={onVideoError}
           muted
           loop
           playsInline
@@ -210,7 +212,9 @@ const FeaturedVideo: React.FC<{ src: string; alt: string; frame?: 'fill' | 'port
       >
         <video
           ref={videoRef}
-          src={src}
+          src={resolveVideo(src)}
+          data-src={src}
+          onError={onVideoError}
           muted={muted}
           loop
           playsInline
