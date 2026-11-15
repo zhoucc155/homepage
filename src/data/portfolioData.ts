@@ -657,6 +657,25 @@ export const AESTHETIC_COLOR_GROUPS: AestheticColorGroup[] = [
 
 export const HOBBIES_DATA: HobbyItem[] = [
   {
+    id: 'esports-gaming',
+    title: '硬核电竞与战术竞技',
+    englishTitle: 'Esports & Gaming',
+    tagline: '毫秒级决策与大局观的极限博弈',
+    image: '/images/hobby_esports_lpl_celebration.jpg',
+    category: 'Competitive Flow',
+    specs: [
+      { label: '关注项目', value: '英雄联盟 / DOTA2 / PUBG' },
+      { label: '竞技段位', value: '多个赛季最高段位荣耀达成' },
+      { label: '核心乐趣', value: '逆风翻盘时的战术复盘与团队协同沟通' },
+      { label: '观赛洞察', value: '成为领袖的关键在于能否直面问题并敢于作出决策' },
+    ],
+    description: '电竞是对抗也是艺术。在瞬息万变的高压对局中，不仅考验个人肌肉记忆与临场判断，更考验团队战术执行能力与瞬时决策力。这种竞技心态让我始终对高耦合的团队协作抱有敬畏之心。',
+    details: [
+      '痴迷于观摩全球电竞赛事并分析战术 BP 逻辑与经济运营模型。',
+      '将竞技对局中的“微小正反馈”与“胜负欲心流”反哺于二次元社区的打榜与成长体系设计。',
+    ],
+  },
+  {
     id: 'novels-reading',
     title: '小说阅写与世界观构建',
     englishTitle: 'Novels & Fiction',
@@ -673,25 +692,6 @@ export const HOBBIES_DATA: HobbyItem[] = [
     details: [
       '日常记录碎片化脑洞笔记，偶尔尝试撰写短篇科幻世界观设定。',
       '坚信好产品也是一种叙事：从初识（开端）、探索（发展）到解决痛点（高潮），步步扣人心弦。',
-    ],
-  },
-  {
-    id: 'esports-gaming',
-    title: '硬核电竞与战术竞技',
-    englishTitle: 'Esports & Gaming',
-    tagline: '毫秒级决策与大局观的极限博弈',
-    image: '/images/project_gaming_esports_1793190000000.jpg',
-    category: 'Competitive Flow',
-    specs: [
-      { label: '关注项目', value: '英雄联盟 / DOTA2 / PUBG' },
-      { label: '竞技段位', value: '多个赛季最高段位荣耀达成' },
-      { label: '核心乐趣', value: '逆风翻盘时的战术复盘与团队协同沟通' },
-      { label: '观赛洞察', value: '成为领袖的关键在于能否直面问题并敢于作出决策' },
-    ],
-    description: '电竞是对抗也是艺术。在瞬息万变的高压对局中，不仅考验个人肌肉记忆与临场判断，更考验团队战术执行能力与瞬时决策力。这种竞技心态让我始终对高耦合的团队协作抱有敬畏之心。',
-    details: [
-      '痴迷于观摩全球电竞赛事并分析战术 BP 逻辑与经济运营模型。',
-      '将竞技对局中的“微小正反馈”与“胜负欲心流”反哺于二次元社区的打榜与成长体系设计。',
     ],
   },
   {

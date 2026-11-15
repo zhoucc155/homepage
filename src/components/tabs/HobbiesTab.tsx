@@ -21,8 +21,8 @@ import {
 
 // 顶层选择器导轨配置：与 HOBBIES_DATA 的索引一一对应
 const HOBBY_TABS: { key: string; label: string; icon: React.ElementType }[] = [
-  { key: 'novels-reading', label: '小说阅写', icon: BookOpen },
   { key: 'esports-gaming', label: '电竞观赛', icon: Gamepad2 },
+  { key: 'novels-reading', label: '小说阅写', icon: BookOpen },
   { key: 'film-music', label: '影视音乐', icon: Clapperboard },
   { key: 'anime-acg', label: '动漫游戏', icon: Ghost },
   { key: 'affairs-history', label: '时政历史', icon: Newspaper },
