@@ -2698,39 +2698,6 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     if (songPaused) setSlots((prev) => prev.slice(0, 1));
   }, [songPaused]);
 
-  // 标签页切到后台：B 站外链播放器会自行暂停出声（跨域 iframe，父页面无法干预），
-  // 而切歌定时按墙钟推进——到点后状态已被推到下一首，回到前台就表现为「没播完就跳下一首」。
-  // 处理方式：把「隐藏」当成一次暂停——隐藏瞬间冻结断点并撤掉切歌定时；回到前台按断点重挂 iframe
-  // 续播同一首（与手动暂停/续播同一条链路），之后照常连播，不会跳过剩余部分
-  const bgPausedRef = React.useRef(false);
-  React.useEffect(() => {
-    const onVisibility = () => {
-      if (document.hidden) {
-        if (!currentSong || songPaused) return;
-        bgPausedRef.current = true;
-        elapsedBaseRef.current = (performance.now() - playStartedAt) / 1000;
-        setSongPaused(true);
-        return;
-      }
-      if (!bgPausedRef.current) return;
-      bgPausedRef.current = false;
-      if (!currentSong) return;
-      const bp = elapsedBaseRef.current;
-      const t = bp >= 1 ? Math.max(0, bp - RESUME_SEEK_BACK_S).toFixed(1) : '0.01';
-      nonceRef.current += 1;
-      setPlayNonce(nonceRef.current);
-      const slot = makeSlot(currentSong, nonceRef.current);
-      if (slot.bvid) slot.src = `https://player.bilibili.com/player.html?bvid=${slot.bvid}&autoplay=1&danmaku=0&t=${t}`;
-      setSlots([slot]);
-      setPlayStartedAt(performance.now() - bp * 1000);
-      setLyricHoldMs(RESUME_HOLD_MS);
-      setSongPaused(false);
-    };
-    document.addEventListener('visibilitychange', onVisibility);
-    return () => document.removeEventListener('visibilitychange', onVisibility);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentSong, songPaused, playStartedAt]);
-
   return (
     <MusicPlayerContext.Provider
       value={{
