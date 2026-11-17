@@ -2471,15 +2471,13 @@ const getAdvanceTimerWorker = (): Worker | null => {
   return advanceTimerWorker;
 };
 
-// 播放器 iframe 槽位：槽 0=正在播放的歌，槽 1=预挂的下一首（仅前台预挂）。
-// 预挂让下一首在当前歌的尾音期间完成加载起播，切歌瞬间无缝接管（不重挂→React 按 key 保住 DOM 节点，音频不中断）；
-// 若当前歌因起播慢而比预估晚结束，重叠会被尾音掩盖，掐尾风险趋近于零
+// 播放器 iframe 槽位：同一时刻只有当前播放的一首歌（切歌时整槽替换，旧 iframe 卸载止声）
 interface PlayerSlot {
   key: number; // iframe 的 key（=playNonce），保证切换时不重挂
   songKey: string; // 歌单 key:歌名
   bvid?: string; // B 站 BV 号（纯视觉歌曲无 bvid，不渲染 iframe）
   src: string; // iframe 播放地址（含 t 起始参数，暂停时更新为断点）
-  bootAt: number; // 挂载时刻（performance.now()），采纳时用于歌词时基回推
+  bootAt: number; // 挂载时刻（performance.now()）
 }
 
 export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -2498,9 +2496,6 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const elapsedBaseRef = React.useRef(0);
   const nonceRef = React.useRef(0); // playNonce 的镜像：供定时链闭包读取最新值，避免 stale
   const [slots, setSlots] = useState<PlayerSlot[]>([]);
-  const slotsRef = React.useRef(slots); // 定时链回调读取最新槽位
-  slotsRef.current = slots;
-  const adoptedRef = React.useRef(false); // 自动切歌采纳了预挂槽（无新 onLoad，effect 里直接续定时链）
   const loadAtRef = React.useRef(0); // 当前歌 iframe onLoad 时刻：playMode 等无关状态变化重跑 effect 时按剩余时间续挂
   const lastRunRef = React.useRef<{ p: boolean; c: string | null } | null>(null); // 上次 effect 运行的 (暂停态, 当前歌)：识别「仅 playMode 变化」的重跑
 
@@ -2533,7 +2528,7 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     setLyricHoldMs(0);
     nonceRef.current += 1;
     setPlayNonce(nonceRef.current);
-    setSlots([makeSlot(key, nonceRef.current)]); // 单槽替换：旧歌（含预挂槽）iframe 全部卸载止声
+    setSlots([makeSlot(key, nonceRef.current)]); // 整槽替换：旧歌 iframe 卸载止声
   };
 
   // 歌曲播放控制：同一首=播放/暂停切换，其他歌=切换播放；切歌时背景选取态跟随
@@ -2593,22 +2588,6 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     return ALL_SONG_KEYS[(idx + 1) % ALL_SONG_KEYS.length] ?? null;
   };
 
-  // 采纳预挂槽：把槽 1 的歌转正为当前歌——不重挂 iframe（key 不变，React 保住 DOM 节点，音频无缝继续）。
-  // 歌词时基回推到预挂歌的出声起点（挂载+约2s，与 LRC_OFFSET_MS 校准一致），断点标量按已播秒数同步
-  const adoptNext = (slot: PlayerSlot) => {
-    setSlots((prev) => prev.slice(1));
-    setCurrentSong(slot.songKey);
-    setSongPaused(false);
-    setFocusedSong(slot.songKey);
-    setPlayStartedAt(slot.bootAt + 2000);
-    setLyricHoldMs(0);
-    nonceRef.current = slot.key;
-    setPlayNonce(slot.key);
-    elapsedBaseRef.current =
-      Math.max(0, (performance.now() - slot.bootAt - 2000) / 1000) + RESUME_SEEK_BACK_S;
-    adoptedRef.current = true; // 提示定时链 effect：采纳的歌没有新 onLoad，挂载后直接续链
-  };
-
   // 按连播模式切到下一首（手动切歌与定时链兜底共用：单曲循环同曲重启，随机/顺序走 pickNextKey）
   const advanceSong = (manual: boolean) => {
     if (!currentSong) return;
@@ -2633,14 +2612,10 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     startSong(ALL_SONG_KEYS[r]);
   };
 
-  // 播完自动切歌：B 站 iframe 无跨域结束事件，只能按配置时长定时近似检测。定时锚点用 iframe 的 onLoad
+  // 播完自动切歌（方案 A）：B 站 iframe 无跨域结束事件，只能按配置时长定时近似检测。定时锚点用 iframe 的 onLoad
   // （播放器资源就绪）而非组件挂载——出声前的缓冲时长可变，挂载时定死「时长+固定余量」会在起播慢时掐断歌尾。
-  // 两段式定时链（仅前台）：第一段在「预估播完+2s」预挂下一首并起播（若当前歌实际已结束，重叠落在静音段，
-  // 下一首紧跟着出声，几乎无空窗；若当前歌因起播慢还没完，重叠被尾音掩盖）；
-  // 第二段 +4s 采纳预挂槽转正（不重挂，音频无缝），此后当前歌即使仍在放也被下一首压住，掐尾不可感。
-  // 页面在后台时不预挂（隐藏页 iframe 自动播放被整体拦截，预挂无意义），退化为单段定时：
-  // 后台起播被节流拉长，用 28s 大余量防掐断；回前台时下一首要等 boot 完成才出声——已知限制。
-  // 定时走 Web Worker（后台标签页不被可见性节流），Worker 不可用时回退主线程 setTimeout（无预挂）
+  // 后台标签页里「新挂载的 iframe 无法自动起播」，所以切到后台时不做任何切换动作：让当前歌在后台自然播完，
+  // 回到前台再按实际已播时长决定「继续等」还是「直接切下一首」——歌不会被中途掐断，回来也必定有声
   const frameArmRef = React.useRef<(() => void) | null>(null);
   React.useEffect(() => {
     const prevRun = lastRunRef.current;
@@ -2648,55 +2623,53 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     if (!playingSong || !playingSong.duration || !currentSong) return;
     const [m, s] = playingSong.duration.split(':').map(Number);
     const remaining = Math.max(1, m * 60 + s - Math.max(0, elapsedBaseRef.current - RESUME_SEEK_BACK_S));
+    const totalMs = remaining * 1000 + 2000; // 预估播完点（+2s 出声延迟余量）
     const w = getAdvanceTimerWorker();
-    if (w) {
-      let stage = 0; // 0=待预挂触发，1=待采纳/切换触发（effect 每次重跑重置）
-      const onFire = () => {
-        if (stage === 0) {
-          stage = 1;
-          const nxt = pickNextKey();
-          if (!document.hidden && nxt && nxt !== currentSong && playMode !== 'loop-one') {
-            setSlots((prev) => (prev.length > 1 ? prev : [...prev, makeSlot(nxt, nonceRef.current + 1)]));
-            w.postMessage({ ms: 4000 }); // 第二段：预挂 boot 后采纳
-            return;
-          }
-          w.postMessage({ ms: document.hidden ? 26000 : 4000 }); // 后台/单曲循环/无下一首：到点直接切
-          return;
-        }
-        const pre = slotsRef.current[1];
-        if (pre) adoptNext(pre);
-        else advanceSong(false);
-      };
-      frameArmRef.current = () => {
-        loadAtRef.current = performance.now();
-        w.postMessage({ ms: remaining * 1000 + 2000 });
-      };
-      w.addEventListener('message', onFire);
-      if (adoptedRef.current) {
-        adoptedRef.current = false;
-        frameArmRef.current(); // 采纳的歌没有新 onLoad，直接续上定时链
-      } else if (prevRun && prevRun.p === songPaused && prevRun.c === currentSong && loadAtRef.current) {
-        // 仅 playMode 变化的重跑（歌没换、没经历暂停/恢复，iframe 不会重挂、没有新 onLoad）：
-        // 旧定时已被 cleanup 取消，按 onLoad 以来已流逝时间续挂。暂停/恢复与切歌场景必须走 onLoad 重新锚定
-        const rest = remaining * 1000 + 2000 - (performance.now() - loadAtRef.current);
-        if (rest > 3000) w.postMessage({ ms: rest });
-        else advanceSong(false); // 已过预估播完点，直接切
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const cancel = () => {
+      if (w) w.postMessage({ ms: null });
+      if (timer) {
+        clearTimeout(timer);
+        timer = null;
       }
-      return () => {
-        frameArmRef.current = null;
-        w.removeEventListener('message', onFire);
-        w.postMessage({ ms: null });
-      };
+    };
+    const schedule = (ms: number) => {
+      cancel();
+      if (w) w.postMessage({ ms });
+      else timer = setTimeout(() => advanceSong(false), ms);
+    };
+    // 距预估播完点还剩多久（按 iframe onLoad 以来已流逝时间扣减）
+    const rearm = () => {
+      const rest = totalMs - (performance.now() - loadAtRef.current);
+      if (rest > 3000) schedule(rest);
+      else advanceSong(false); // 已过预估播完点：直接切下一首（此时在前台，起播有声）
+    };
+    const onFire = () => {
+      if (document.hidden) return; // 兜底：后台不切歌，等回前台按实际进度处理
+      advanceSong(false);
+    };
+    frameArmRef.current = () => {
+      loadAtRef.current = performance.now();
+      if (!document.hidden) schedule(totalMs);
+    };
+    const onVisibility = () => {
+      if (document.hidden) cancel(); // 挂起定时：让当前歌在后台自然播完，不再中途换歌
+      else if (loadAtRef.current) rearm(); // 回前台：没播完就续定时，已过点就切下一首
+    };
+    if (w) w.addEventListener('message', onFire);
+    document.addEventListener('visibilitychange', onVisibility);
+    if (prevRun && prevRun.p === songPaused && prevRun.c === currentSong && loadAtRef.current) {
+      // 仅 playMode 变化的重跑（歌没换、没经历暂停/恢复，iframe 不会重挂、没有新 onLoad）：按已流逝时间续挂
+      if (!document.hidden) rearm();
     }
-    const timer = setTimeout(() => advanceSong(false), remaining * 1000 + (document.hidden ? 28000 : 4000));
-    return () => clearTimeout(timer);
+    return () => {
+      frameArmRef.current = null;
+      if (w) w.removeEventListener('message', onFire);
+      document.removeEventListener('visibilitychange', onVisibility);
+      cancel();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playingSong, songPaused, playMode, currentSong]);
-
-  // 暂停时撤掉预挂槽：预挂的下一首已自动出声，恢复播放时按断点重挂当前歌，预挂重新调度
-  React.useEffect(() => {
-    if (songPaused) setSlots((prev) => prev.slice(0, 1));
-  }, [songPaused]);
 
   return (
     <MusicPlayerContext.Provider
@@ -2719,9 +2692,8 @@ export const MusicPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
       }}
     >
       {children}
-      {/* 全局音频 iframe 槽位（B 站外链播放器）：fixed 微型容器不影响任何布局，切 tab/页面不卸载。
-          槽 0=当前歌；槽 1=预挂的下一首（前台播完前 2s 出现，采纳时按 key 保住 DOM 节点无缝接管）。
-          暂停时全部卸载止声，恢复时按断点 src 重挂 */}
+      {/* 全局音频 iframe（B 站外链播放器）：fixed 微型容器不影响任何布局，切 tab/页面不卸载。
+          同时只挂当前歌；暂停时卸载止声，恢复时按断点 src 重挂 */}
       <div className="fixed top-0 left-0 h-px w-px overflow-hidden opacity-0 pointer-events-none" aria-hidden="true">
         {!songPaused &&
           slots.map((slot) =>
