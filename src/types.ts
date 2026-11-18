@@ -47,6 +47,8 @@ export interface ServiceItem {
 export interface ArticleItem {
   id: string;
   title: string;
+  subtitle?: string;
+  cover?: string;
   category: string;
   date: string;
   readTime: string;
@@ -54,7 +56,8 @@ export interface ArticleItem {
   excerpt: string;
   isFeatured?: boolean;
   slug: string;
-  content: string;
+  /** 正文段落数组（每段一个字符串），支持 Markdown-like 内联格式：**粗体**、*斜体*、>引用、`代码`、- / * 列表 */
+  content: string | string[];
 }
 
 export interface MilestoneItem {

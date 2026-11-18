@@ -4,12 +4,13 @@
  */
 
 import React, { useState } from 'react';
-import { TabKey, ProjectItem } from './types';
+import { TabKey, ProjectItem, ArticleItem } from './types';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { BackToTop } from './components/BackToTop';
 import { ContactModal } from './components/ContactModal';
 import { ProjectModal } from './components/ProjectModal';
+import { ArticleModal } from './components/ArticleModal';
 import { MusicPlayerProvider } from './components/tabs/HobbiesTab';
 import { usePlayer } from './components/MusicPlayerContext';
 
@@ -24,6 +25,7 @@ const AppShell = () => {
   const [pendingTrack, setPendingTrack] = useState<'all' | 'acg' | 'audio' | 'ota'>('all');
   const [isContactOpen, setIsContactOpen] = useState<boolean>(false);
   const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(null);
+  const [selectedArticle, setSelectedArticle] = useState<ArticleItem | null>(null);
   // 导航栏黑胶「查看歌单」请求：切到爱好页（歌单页内的落地定位由 HobbiesTab 消费同一请求完成）
   const { viewRequest } = usePlayer();
 
@@ -68,7 +70,10 @@ const AppShell = () => {
         {activeTab === 'hobbies' && <HobbiesTab />}
 
         {activeTab === 'works' && (
-          <WorksTab onSelectProject={(proj) => setSelectedProject(proj)} />
+          <WorksTab
+            onSelectProject={(proj) => setSelectedProject(proj)}
+            onSelectArticle={(art) => setSelectedArticle(art)}
+          />
         )}
       </main>
 
@@ -90,6 +95,11 @@ const AppShell = () => {
       <ProjectModal
         project={selectedProject}
         onClose={() => setSelectedProject(null)}
+      />
+
+      <ArticleModal
+        article={selectedArticle}
+        onClose={() => setSelectedArticle(null)}
       />
     </div>
   );

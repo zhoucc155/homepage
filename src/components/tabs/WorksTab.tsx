@@ -1,6 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ProjectItem } from '../../types';
-import { PROJECTS_DATA, resolveImg, onImgError, resolveVideo, onVideoError } from '../../data/portfolioData';
+import { ProjectItem, ArticleItem } from '../../types';
+import {
+  PROJECTS_DATA,
+  ARTICLES_DATA,
+  resolveImg,
+  onImgError,
+  resolveVideo,
+  onVideoError,
+} from '../../data/portfolioData';
 import { ProjectCover } from '../ProjectCover';
 import {
   Sparkles,
@@ -398,9 +405,10 @@ const FeaturedCarousel: React.FC<{ images: string[]; alt: string }> = ({ images,
 
 interface WorksTabProps {
   onSelectProject: (project: ProjectItem) => void;
+  onSelectArticle?: (article: ArticleItem) => void;
 }
 
-export const WorksTab: React.FC<WorksTabProps> = ({ onSelectProject }) => {
+export const WorksTab: React.FC<WorksTabProps> = ({ onSelectProject, onSelectArticle }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
@@ -418,6 +426,24 @@ export const WorksTab: React.FC<WorksTabProps> = ({ onSelectProject }) => {
       project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       project.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
       project.tags.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase()));
+    return matchesCategory && matchesSearch;
+  });
+
+  // 文章卡的分类逻辑：取 category 的第一段（第一个「·」之前）作为主分类来匹配
+  // 例如 "内容创作 · 赛事随笔" → "内容创作"，"AI 编程 · 智能体工作流" → "AI 编程"（但现有分类 chip 里没"AI 编程"，只有 All/AI实践/内容创作）
+  // 所以文章匹配：category 包含 chip value 就算命中
+  const filteredArticles = ARTICLES_DATA.filter((a) => {
+    const cat = a.category || '';
+    const matchesCategory =
+      selectedCategory === 'All' ||
+      cat.includes(selectedCategory) ||
+      // 「内容创作」 chip 匹配所有包含"创作"或标签里有内容创作意图的
+      (selectedCategory === '内容创作' && cat.includes('创作')) ||
+      // 「AI实践」 chip 匹配 AI 编程相关文章
+      (selectedCategory === 'AI实践' && cat.includes('AI'));
+    const matchesSearch =
+      a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      a.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
@@ -666,7 +692,86 @@ export const WorksTab: React.FC<WorksTabProps> = ({ onSelectProject }) => {
         })}
       </section>
 
-      {filteredProjects.length === 0 && (
+      {/* 阅读随笔区 */}
+      {filteredArticles.length > 0 && (
+        <section className="space-y-6">
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-500">
+              Reading · 随笔与文章
+            </span>
+            <div className="flex-1 h-px bg-neutral-200" />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {filteredArticles.map((article) => (
+              <button
+                key={article.id}
+                onClick={() => onSelectArticle?.(article)}
+                className="group text-left bg-white border border-neutral-200/90 rounded-2xl shadow-xs hover:shadow-md hover:border-neutral-300 transition-all overflow-hidden flex flex-col p-5 sm:p-6 gap-3 sm:gap-3.5 cursor-pointer"
+              >
+                {/* 封面：有 cover 则 3:2 图，无 cover 则用渐变衬底 */}
+                {article.cover ? (
+                  <div className="relative aspect-[3/2] rounded-xl overflow-hidden bg-neutral-100 shrink-0 border border-neutral-200">
+                    <img
+                      src={resolveImg(article.cover)}
+                      data-src={article.cover}
+                      onError={onImgError}
+                      alt={article.title}
+                      referrerPolicy="no-referrer"
+                      loading="lazy"
+                      decoding="async"
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                    />
+                    <div className="absolute top-3 left-3 backdrop-blur-md bg-black/45 border border-white/15 text-white text-[10px] font-semibold py-1 px-3 rounded-full">
+                      阅读随笔
+                    </div>
+                  </div>
+                ) : (
+                  <div className="relative aspect-[3/2] rounded-xl overflow-hidden shrink-0 border border-neutral-200 bg-gradient-to-br from-neutral-800 via-neutral-900 to-black">
+                    <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_30%_30%,white,transparent_60%)]" />
+                    <div className="absolute inset-0 flex items-center justify-center text-white/40 text-xs font-mono tracking-wider">
+                      READING
+                    </div>
+                    <div className="absolute top-3 left-3 backdrop-blur-md bg-black/45 border border-white/15 text-white text-[10px] font-semibold py-1 px-3 rounded-full">
+                      阅读随笔
+                    </div>
+                  </div>
+                )}
+
+                {/* 内容区 */}
+                <div className="flex-1 flex flex-col gap-1.5">
+                  <div className="font-mono text-[10px] text-neutral-400 uppercase tracking-wider">
+                    {article.category}
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-bold text-neutral-900 leading-snug group-hover:text-[#2563EB] transition-colors">
+                    {article.title}
+                  </h3>
+                  {article.subtitle && (
+                    <div className="text-[12px] text-neutral-500 leading-relaxed">
+                      {article.subtitle}
+                    </div>
+                  )}
+                  <p className="text-[13px] text-neutral-600 leading-relaxed line-clamp-2 mt-1">
+                    {article.excerpt}
+                  </p>
+
+                  <div className="mt-auto pt-3 flex items-center justify-between text-[11px] font-mono text-neutral-400">
+                    <span>
+                      {article.date} · {article.readTime}
+                    </span>
+                    <span className="inline-flex items-center gap-1 text-neutral-500 group-hover:text-[#2563EB] transition-colors">
+                      阅读全文
+                      <ArrowUpRight className="w-3 h-3" />
+                    </span>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {filteredProjects.length === 0 && filteredArticles.length === 0 && (
         <div className="text-center py-16 bg-white border border-neutral-200 rounded-2xl space-y-2">
           <p className="text-sm font-semibold text-neutral-700">没有找到匹配的项目</p>
           <p className="text-xs text-neutral-400">请尝试切换分类或缩减搜索关键词</p>
