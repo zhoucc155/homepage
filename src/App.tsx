@@ -67,7 +67,7 @@ const AppShell = () => {
           />
         )}
 
-        {activeTab === 'hobbies' && <HobbiesTab />}
+        {activeTab === 'hobbies' && <HobbiesTab onSelectArticle={(art) => setSelectedArticle(art)} />}
 
         {activeTab === 'works' && (
           <WorksTab

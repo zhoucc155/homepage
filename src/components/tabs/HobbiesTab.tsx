@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { HOBBIES_DATA, resolveImg, onImgError } from '../../data/portfolioData';
+import { HOBBIES_DATA, ARTICLES_DATA, resolveImg, onImgError } from '../../data/portfolioData';
 import { MessageBoardOverlay } from '../MessageBoardOverlay';
 import { usePlayer, MusicPlayerContext } from '../MusicPlayerContext';
 import type { PlayMode, ViewPlaylistRequest } from '../MusicPlayerContext';
@@ -16,7 +16,10 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  Play
+  Play,
+  Trophy,
+  Calendar,
+  Clock
 } from 'lucide-react';
 
 // 顶层选择器导轨配置：与 HOBBIES_DATA 的索引一一对应
@@ -2730,7 +2733,11 @@ const FILM_TABS: { key: 'movie' | 'series'; label: string }[] = [
   { key: 'series', label: '剧集' },
 ];
 
-export const HobbiesTab: React.FC = () => {
+interface HobbiesTabProps {
+  onSelectArticle?: (article: typeof ARTICLES_DATA[number]) => void;
+}
+
+export const HobbiesTab: React.FC<HobbiesTabProps> = ({ onSelectArticle }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [bookPage, setBookPage] = useState(0);
   const [msgActive, setMsgActive] = useState(false); // 留言板激活态
@@ -3264,6 +3271,32 @@ export const HobbiesTab: React.FC = () => {
                   </>
                 )}
               </div>
+
+              {/* 电竞专属：BLG S16 夺冠随笔按钮（放在切换卡灰色盒子外部下方） */}
+              {hobby.id === 'esports-gaming' && (
+                <button
+                  onClick={() => onSelectArticle?.(ARTICLES_DATA[0]!)}
+                  className="mt-3 group inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-neutral-200 bg-white hover:border-neutral-300 hover:shadow-xs transition-all cursor-pointer"
+                >
+                  <div className="shrink-0 w-5 h-5 rounded-md overflow-hidden bg-neutral-900">
+                    <img
+                      src={resolveImg(ARTICLES_DATA[0]?.cover ?? '')}
+                      data-src={ARTICLES_DATA[0]?.cover}
+                      onError={onImgError}
+                      alt=""
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                  <Trophy className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                  <span className="text-[12px] font-semibold text-neutral-800 group-hover:text-neutral-900">
+                    {ARTICLES_DATA[0]?.title}
+                  </span>
+                  <span className="text-[11px] font-mono text-neutral-400 shrink-0">
+                    {ARTICLES_DATA[0]?.readTime}
+                  </span>
+                </button>
+              )}
             </div>
 
             {/* 大图画报侧（50%，纵向撑满） */}
