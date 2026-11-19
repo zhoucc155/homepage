@@ -21,24 +21,26 @@ export const Navbar: React.FC<NavbarProps> = ({
   const { isPlaying, playPause, skipSong, playMode, setPlayMode, viewPlaylist } = usePlayer();
   const [showHint, setShowHint] = useState(false);
 
-  // 首次打开网页：头像左侧浮现音乐提示（展示一次后本地记录，开始播放或 6 秒后消失）
-  React.useEffect(() => {
-    if (!localStorage.getItem('mb_vinyl_hint_done')) setShowHint(true);
+  // 按当天日期生成 localStorage key（每天换 key，每天第一次打开都显示提示）
+  const dailyHintKey = React.useMemo(() => {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `mb_vinyl_hint_shown_${y}-${m}-${day}`;
   }, []);
+
+  // 首次打开：当天还没看过 → 显示
   React.useEffect(() => {
+    if (!localStorage.getItem(dailyHintKey)) setShowHint(true);
+  }, [dailyHintKey]);
+
+  // 鼠标移到黑胶上：提示永久关闭（当天）
+  const hideHintForToday = React.useCallback(() => {
     if (!showHint) return;
-    const t = setTimeout(() => {
-      setShowHint(false);
-      localStorage.setItem('mb_vinyl_hint_done', '1');
-    }, 6000);
-    return () => clearTimeout(t);
-  }, [showHint]);
-  React.useEffect(() => {
-    if (isPlaying && showHint) {
-      setShowHint(false);
-      localStorage.setItem('mb_vinyl_hint_done', '1');
-    }
-  }, [isPlaying, showHint]);
+    setShowHint(false);
+    localStorage.setItem(dailyHintKey, '1');
+  }, [showHint, dailyHintKey]);
 
   // 连播模式：顺序播放 / 单曲循环 / 随机播放
   const playModes: { key: PlayMode; label: string; Icon: typeof ListOrdered }[] = [
@@ -155,7 +157,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* 黑胶唱片播放器：头像即唱片，播放时缓慢顺时针旋转；悬浮显示播放/暂停，并触发 DVD 抽屉从导航栏左侧抽出 */}
           <div
             className="relative group/vinyl shrink-0"
-            onMouseEnter={openDrawer}
+            onMouseEnter={() => { openDrawer(); hideHintForToday(); }}
             onMouseLeave={scheduleDrawerClose}
           >
             {/* 首次访问提示：唱片左侧滑入（悬浮黑胶或开始播放后消失；小屏隐藏避免横向溢出） */}
